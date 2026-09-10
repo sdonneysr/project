@@ -1,0 +1,1896 @@
+<title>Control de Portafolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style id="css">
+:root{
+  --ground:#F3F4F8; --surface:#FFFFFF; --surface-2:#F8F9FC; --surface-3:#EEF0F6;
+  --line:#DCDFE9; --line-strong:#BFC5D6;
+  --ink:#161926; --ink-2:#4A5165; --ink-3:#787F96;
+  --accent:#3D5AAA; --accent-soft:#E6EBF8; --accent-ink:#2B4183; --on-accent:#FFFFFF; --bar-empty:rgba(255,255,255,.62);
+  --ok:#1C7A4E; --ok-soft:#E2F1E9;
+  --warn:#9E6B12; --warn-soft:#FAEEDA;
+  --risk:#AF362F; --risk-soft:#FAE6E4;
+  --neutral-soft:#E9EBF1;
+  --shadow:0 1px 2px rgba(22,25,38,.06), 0 4px 14px rgba(22,25,38,.05);
+  --r:10px; --r-sm:6px;
+  --font-d:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-b:"Source Sans 3","Helvetica Neue",Arial,sans-serif;
+  --font-m:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1018; --surface:#171A25; --surface-2:#1D2130; --surface-3:#232838;
+    --line:#2A2F41; --line-strong:#3C4358;
+    --ink:#E9EBF3; --ink-2:#A9AFC4; --ink-3:#7B8299;
+    --accent:#7C94E2; --accent-soft:#212840; --accent-ink:#A9BBF2; --on-accent:#0E1018; --bar-empty:rgba(10,12,20,.55);
+    --ok:#54B384; --ok-soft:#16281F;
+    --warn:#DCA646; --warn-soft:#2B2314;
+    --risk:#E27C73; --risk-soft:#2E1A18;
+    --neutral-soft:#242939;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1018; --surface:#171A25; --surface-2:#1D2130; --surface-3:#232838;
+  --line:#2A2F41; --line-strong:#3C4358;
+  --ink:#E9EBF3; --ink-2:#A9AFC4; --ink-3:#7B8299;
+  --accent:#7C94E2; --accent-soft:#212840; --accent-ink:#A9BBF2; --on-accent:#0E1018; --bar-empty:rgba(10,12,20,.55);
+  --ok:#54B384; --ok-soft:#16281F;
+  --warn:#DCA646; --warn-soft:#2B2314;
+  --risk:#E27C73; --risk-soft:#2E1A18;
+  --neutral-soft:#242939;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-b);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-d);margin:0;text-wrap:balance;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+.ev{display:inline-flex;align-items:center;gap:5px;max-width:230px}
+.ev svg{flex:none;opacity:.7}
+.ev span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.mono{font-family:var(--font-m);font-variant-numeric:tabular-nums}
+.num{font-family:var(--font-m);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+/* ---------- chrome ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1480px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand h1{font-size:19px;font-weight:700}
+.brand .sub{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em;font-family:var(--font-d);font-weight:500}
+.tabs{max-width:1480px;margin:0 auto;padding:0 22px;display:flex;gap:2px;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:11px 14px;font-family:var(--font-d);font-weight:500;font-size:14px;color:var(--ink-3);cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--accent-ink);border-bottom-color:var(--accent)}
+main{max-width:1480px;margin:0 auto;padding:24px 22px 80px}
+.wrap{display:flex;flex-direction:column;gap:22px}
+
+/* ---------- controls ---------- */
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:7px 13px;border-radius:var(--r-sm);cursor:pointer;font-family:var(--font-d);font-weight:500;font-size:13.5px;transition:background .12s,border-color .12s}
+.btn:hover{background:var(--surface-3);border-color:var(--ink-3)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:var(--on-accent)}
+.btn-sm{padding:4px 9px;font-size:12.5px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--ink-2)}
+.btn-ghost:hover{background:var(--surface-3)}
+.btn-danger{color:var(--risk);border-color:var(--line-strong)}
+.btn-danger:hover{background:var(--risk-soft);border-color:var(--risk)}
+select,input[type=text],input[type=date],input[type=number],textarea{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:6px 9px;font-size:14px;min-width:0}
+label.fld{display:flex;flex-direction:column;gap:5px;font-size:12px;font-family:var(--font-d);font-weight:500;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+label.fld>*:not(span){text-transform:none;letter-spacing:0;font-family:var(--font-b);font-weight:400;color:var(--ink)}
+.toolbar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.toolbar .grow{margin-left:auto}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.card-h h2{font-size:15px;font-weight:600}
+.card-h .hint{font-size:12.5px;color:var(--ink-3);margin-left:auto}
+.card-b{padding:18px}
+.card-b.flush{padding:0}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.kpi .k-label{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-family:var(--font-d);font-weight:500}
+.kpi .k-val{font-family:var(--font-d);font-weight:700;font-size:30px;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .k-val.sm{font-size:22px}
+.kpi .k-foot{font-size:12.5px;color:var(--ink-2)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-family:var(--font-d);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface-2)}
+td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface-2)}
+td.r,th.r{text-align:right}
+td.c,th.c{text-align:center}
+.t-strong{font-weight:600}
+.t-sub{font-size:12.5px;color:var(--ink-3)}
+.empty{padding:44px 20px;text-align:center;color:var(--ink-3)}
+.empty h3{font-size:16px;color:var(--ink-2);margin-bottom:6px}
+
+/* ---------- chips / bars ---------- */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:100px;font-size:12px;font-family:var(--font-d);font-weight:500;white-space:nowrap;border:1px solid transparent}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.chip.ok{background:var(--ok-soft);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 30%,transparent)}
+.chip.warn{background:var(--warn-soft);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 30%,transparent)}
+.chip.risk{background:var(--risk-soft);color:var(--risk);border-color:color-mix(in srgb,var(--risk) 30%,transparent)}
+.chip.info{background:var(--accent-soft);color:var(--accent-ink);border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+.chip.mute{background:var(--neutral-soft);color:var(--ink-2);border-color:var(--line)}
+.chip.plain::before{display:none}
+
+.pbar{display:flex;align-items:center;gap:9px;min-width:130px}
+.pbar .track{flex:1;height:7px;border-radius:100px;background:var(--surface-3);overflow:hidden;border:1px solid var(--line)}
+.pbar .fill{height:100%;background:var(--accent);border-radius:100px}
+.pbar .fill.ok{background:var(--ok)} .pbar .fill.warn{background:var(--warn)} .pbar .fill.risk{background:var(--risk)}
+.pbar .pct{font-family:var(--font-m);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink-2);width:38px;text-align:right}
+
+/* ---------- gantt ---------- */
+.gantt{position:relative;display:flex;border-top:1px solid var(--line)}
+.g-left{flex:none;width:322px;border-right:1px solid var(--line);background:var(--surface);position:sticky;left:0;z-index:3}
+.g-right{flex:1;overflow-x:auto;overflow-y:hidden;position:relative}
+.g-canvas{position:relative}
+.g-head{height:46px;border-bottom:1px solid var(--line);position:relative;background:var(--surface-2)}
+.g-left .g-head{display:flex;align-items:flex-end;padding:0 14px 7px;font-family:var(--font-d);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600}
+.g-month{position:absolute;top:0;height:23px;border-left:1px solid var(--line);padding:4px 6px;font-family:var(--font-d);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);white-space:nowrap;overflow:hidden}
+.g-tick{position:absolute;top:23px;height:23px;border-left:1px solid var(--line);padding:4px 4px;font-size:10.5px;color:var(--ink-3);font-family:var(--font-m);white-space:nowrap;overflow:hidden}
+.g-tick.we{background:var(--surface-3)}
+.g-grid{position:absolute;top:0;bottom:0;border-left:1px solid var(--line);opacity:.55}
+.g-grid.we{background:var(--surface-2);opacity:1;border-left-color:transparent}
+.g-row{height:32px;border-bottom:1px solid var(--line);position:relative}
+.g-left .g-row{display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13.5px;white-space:nowrap;overflow:hidden}
+.g-row.phase{background:var(--surface-2)}
+.g-left .g-row.phase{font-family:var(--font-d);font-weight:600;font-size:13px}
+.g-left .g-row.task{padding-left:26px;color:var(--ink-2)}
+.g-left .g-row .nm{overflow:hidden;text-overflow:ellipsis}
+.g-bar{position:absolute;top:8px;height:16px;border-radius:4px;background:var(--accent);opacity:.9;overflow:hidden;cursor:default}
+.g-bar .g-fill{height:100%;background:var(--bar-empty)}
+.g-bar.phase{background:var(--ink-2);opacity:.55;height:10px;top:11px;border-radius:3px}
+.g-bar.late{background:var(--risk)}
+.g-bar.done{background:var(--ok)}
+.g-bar .g-lab{position:absolute;left:calc(100% + 7px);top:-2px;font-size:11.5px;color:var(--ink-3);white-space:nowrap;font-family:var(--font-m)}
+.g-ms{position:absolute;top:9px;width:14px;height:14px;background:var(--warn);transform:rotate(45deg);border-radius:2px}
+.g-today{position:absolute;top:0;bottom:0;width:2px;background:var(--risk);z-index:2;pointer-events:none}
+.g-today::after{content:"HOY";position:absolute;top:2px;left:4px;font-family:var(--font-d);font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--risk)}
+.g-dep{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:visible}
+.g-legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 18px;font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line);background:var(--surface-2);border-radius:0 0 var(--r) var(--r)}
+.g-legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:9px;border-radius:2px;display:inline-block}
+
+/* ---------- comunicaciones / interesados ---------- */
+.quad{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.quad .q{border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 15px;background:var(--surface-2);min-height:112px;display:flex;flex-direction:column;gap:7px}
+.quad .q.gc{border-color:color-mix(in srgb,var(--risk) 45%,transparent);background:var(--risk-soft)}
+.quad .q.mi{border-color:color-mix(in srgb,var(--accent) 45%,transparent);background:var(--accent-soft)}
+.quad .q.ms{border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:var(--warn-soft)}
+.quad .q h4{font-family:var(--font-d);font-size:13px;font-weight:600;display:flex;align-items:baseline;gap:8px}
+.quad .q h4 em{font-style:normal;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:500}
+.quad .q ul{margin:0;padding-left:17px;font-size:13px;color:var(--ink-2);display:flex;flex-direction:column;gap:2px}
+.quad .q .none{font-size:12.5px;color:var(--ink-3);font-style:italic}
+.axis{display:flex;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-family:var(--font-d);font-weight:500;margin-bottom:8px}
+.eng td.st{text-align:center;font-family:var(--font-d);font-weight:700;font-size:12px;width:88px}
+.eng td.st .a{color:var(--ink);border:1px solid var(--line-strong);background:var(--surface-3);border-radius:4px;padding:1px 6px;display:inline-block}
+.eng td.st .d{color:var(--accent-ink);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:var(--accent-soft);border-radius:4px;padding:1px 6px;display:inline-block;margin-left:3px}
+.subhead{font-family:var(--font-d);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin:0 0 10px}
+.nota{font-size:12.5px;color:var(--ink-2);max-width:74ch;margin:0}
+
+/* ---------- resources ---------- */
+.matrix td.cell{text-align:center;font-family:var(--font-m);font-variant-numeric:tabular-nums}
+.matrix td.tot{font-weight:600;font-family:var(--font-m)}
+.matrix td.over{color:var(--risk);font-weight:700}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:22px}
+
+/* ---------- modal ---------- */
+.ovl{position:fixed;inset:0;background:rgba(12,14,22,.55);display:flex;align-items:flex-start;justify-content:center;padding:5vh 18px;z-index:100;overflow:auto}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);width:min(660px,100%);box-shadow:0 18px 50px rgba(0,0,0,.3)}
+.modal h2{font-size:17px;font-weight:700}
+.modal-b{padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-b .full{grid-column:1/-1}
+.modal-f{padding:14px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.err{color:var(--risk);font-size:13px;margin-right:auto;align-self:center}
+.chkline{display:flex;align-items:center;gap:8px;font-size:14px}
+.multi{border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:8px;max-height:130px;overflow:auto;display:flex;flex-direction:column;gap:5px;background:var(--surface)}
+
+/* ---------- toast / banner ---------- */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:100px;font-size:13.5px;z-index:200;box-shadow:0 8px 26px rgba(0,0,0,.3);font-family:var(--font-d);font-weight:500}
+.banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:var(--r);font-size:13.5px;border:1px solid}
+.banner.val-warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 40%,transparent);color:var(--ink);align-items:flex-start}
+.banner.val-ok{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 34%,transparent);color:var(--ink-2)}
+.banner.ro{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 34%,transparent);color:var(--accent-ink)}
+.saving{font-size:12.5px;color:var(--ink-3);font-family:var(--font-m)}
+
+/* ---------- print ---------- */
+@media print{
+  @page{size:A4 landscape;margin:12mm}
+  body{background:#fff;color:#000;font-size:11px}
+  .topbar,.tabs,.no-print,.g-legend{display:none !important}
+  main{padding:0;max-width:none}
+  .print-head{display:block !important;margin-bottom:12px;border-bottom:2px solid #000;padding-bottom:8px}
+  .card,.kpi{box-shadow:none;border:1px solid #999;break-inside:avoid}
+  .chip{border:1px solid #666 !important;background:#fff !important;color:#000 !important}
+  a{color:#000 !important}
+  .ev{max-width:none}
+  .ev span{white-space:normal;overflow:visible}
+  .chip::before{background:#000}
+  .pbar .track{border:1px solid #666}
+  .pbar .fill,.pbar .fill.ok,.pbar .fill.warn,.pbar .fill.risk{background:#333 !important}
+  th{background:#eee !important;color:#000}
+  tbody tr:hover{background:none}
+}
+.print-head{display:none}
+@media (max-width:720px){
+  .modal-b{grid-template-columns:1fr}
+  .g-left{width:180px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+<div id="root" aria-busy="true"></div>
+<script type="application/json" id="db">{"v":3,"proyectos":[],"fases":[],"tareas":[],"entregables":[],"recursos":[],"asignaciones":[],"costos":[],"riesgos":[],"alcance":[],"interesados":[],"comunicaciones":[]}</script>
+<script id="app">
+(function(){
+"use strict";
+/* ============================ ESTADO ============================ */
+var DB = JSON.parse(document.getElementById('db').textContent);
+['proyectos','fases','tareas','entregables','recursos','asignaciones','costos','riesgos','alcance','interesados','comunicaciones'].forEach(function(k){ if(!Array.isArray(DB[k])) DB[k]=[]; });
+var root = document.getElementById('root');
+var readOnly = false, saving = false, artifactNS = null, downloadsNS = null;
+var UI = {tab:'resumen', proy:'*', zoom:'semana', eEstado:'*', eResp:'*', tFase:'*', tEstado:'*', rEstado:'*'};
+try{ var s = sessionStorage.getItem('cp_ui'); if(s) UI = Object.assign(UI, JSON.parse(s)); }catch(e){}
+function saveUI(){ try{ sessionStorage.setItem('cp_ui', JSON.stringify(UI)); }catch(e){} }
+
+var HOY = (function(){ var d=new Date(); return iso(new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))); })();
+
+/* ============================ UTILES ============================ */
+function uid(p){ return p+'-'+Math.random().toString(36).slice(2,9); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function iso(d){ return d.toISOString().slice(0,10); }
+function pd(s){ if(!s) return null; var a=String(s).split('-'); return Date.UTC(+a[0],+a[1]-1,+a[2]); }
+function dnum(s){ var t=pd(s); return t===null?null:Math.round(t/864e5); }
+function addD(s,n){ var t=pd(s); return iso(new Date(t+n*864e5)); }
+function fdate(s){ if(!s) return '—'; var a=String(s).split('-'); return a[2]+'/'+a[1]+'/'+a[0]; }
+function fdateL(s){ if(!s) return '—'; var M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']; var a=String(s).split('-'); return a[2]+' '+M[+a[1]-1]+' '+a[0]; }
+function diasEntre(a,b){ return (dnum(b)-dnum(a)); }
+var COP = new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
+var NUM = new Intl.NumberFormat('es-CO',{maximumFractionDigits:0});
+function money(n){ n=Number(n)||0; return COP.format(n); }
+function moneyK(n){ n=Number(n)||0; if(Math.abs(n)>=1e9) return '$'+ (n/1e9).toFixed(n>=1e10?0:1).replace('.',',') +' MM';
+  if(Math.abs(n)>=1e6) return '$'+ (n/1e6).toFixed(n>=1e7?0:1).replace('.',',') +' M';
+  if(Math.abs(n)>=1e3) return '$'+ NUM.format(Math.round(n/1e3)) +' mil'; return '$'+NUM.format(n); }
+function byId(arr,id){ for(var i=0;i<arr.length;i++) if(arr[i].id===id) return arr[i]; return null; }
+function pct(n){ n=Number(n)||0; return Math.max(0,Math.min(100,Math.round(n))); }
+function clsAvance(v){ return v>=100?'ok':(v>=50?'':'warn'); }
+function nombreRec(id){ var r=byId(DB.recursos,id); return r?r.nombre:'—'; }
+function nombreProy(id){ var p=byId(DB.proyectos,id); return p?p.nombre:'—'; }
+function codProy(id){ var p=byId(DB.proyectos,id); return p?(p.codigo||p.nombre):'—'; }
+function sortBy(arr,f){ return arr.slice().sort(function(a,b){ var x=f(a),y=f(b); return x<y?-1:x>y?1:0; }); }
+
+/* ---------- filtros / derivados ---------- */
+function proyectosVisibles(){ return UI.proy==='*'?DB.proyectos:DB.proyectos.filter(function(p){return p.id===UI.proy;}); }
+function idsVisibles(){ return proyectosVisibles().map(function(p){return p.id;}); }
+function tareasDe(pid){ return DB.tareas.filter(function(t){return t.proyectoId===pid;}); }
+function fasesDe(pid){
+  return DB.fases.filter(function(f){return f.proyectoId===pid;}).slice().sort(function(a,b){
+    var oa = (a.orden==null||a.orden==='')?9999:Number(a.orden), ob = (b.orden==null||b.orden==='')?9999:Number(b.orden);
+    if(oa!==ob) return oa-ob;
+    var fa=a.fechaInicio||'9999-12-31', fb=b.fechaInicio||'9999-12-31';
+    return fa<fb?-1:fa>fb?1:0;
+  });
+}
+
+function avanceCalculado(pid){
+  var ts = tareasDe(pid); if(!ts.length) return null;
+  var num=0, den=0;
+  ts.forEach(function(t){ var d = Math.max(1,(diasEntre(t.fechaInicio,t.fechaFin)||0)+1); den+=d; num += d*(Number(t.avance)||0); });
+  return den? Math.round(num/den) : null;
+}
+function rangoProyecto(p){
+  var ts=tareasDe(p.id), fs=fasesDe(p.id), ini=p.fechaInicio, fin=p.fechaFin;
+  ts.concat(fs).forEach(function(x){
+    if(x.fechaInicio && (!ini || x.fechaInicio<ini)) ini=x.fechaInicio;
+    if(x.fechaFin && (!fin || x.fechaFin>fin)) fin=x.fechaFin;
+  });
+  return {ini:ini,fin:fin};
+}
+var EST_PROY = ['Planeado','En curso','En riesgo','Retrasado','Cerrado'];
+function chipProy(e){ var c = e==='Cerrado'?'ok': e==='En curso'?'info': e==='En riesgo'?'warn': e==='Retrasado'?'risk':'mute';
+  return '<span class="chip '+c+'">'+esc(e||'Planeado')+'</span>'; }
+var EST_ENT = ['Pendiente','En curso','Entregado','Aprobado','Retrasado'];
+function chipEnt(e){ var c = (e==='Aprobado')?'ok':(e==='Entregado')?'info':(e==='En curso')?'info':(e==='Retrasado')?'risk':'mute';
+  return '<span class="chip '+c+'">'+esc(e||'Pendiente')+'</span>'; }
+var EST_TAR = ['Pendiente','En curso','Completada','Bloqueada'];
+var EST_RIE = ['Abierto','En mitigación','Mitigado','Materializado','Cerrado'];
+/* --- comunicaciones e interesados (PMBOK: dominio de interesados y comunicaciones) --- */
+var FRECUENCIAS = ['Única (inicio)','Diaria','Semanal','Quincenal','Mensual','Por hito/entregable','Según necesidad','Única (cierre)'];
+var CANALES = ['Reunión presencial','Videollamada (Meet)','Correo electrónico','Chat / Spaces','Informe escrito','Comité formal','Tablero / Dashboard','Repositorio documental'];
+var CAT_INT = ['Gobernanza','Patrocinio','Equipo del proyecto','Cliente / usuario','Área técnica','Proveedor','Regulador'];
+var POSTURAS = ['Desconoce','Resistente','Neutral','Apoya','Lidera'];
+var NIVEL2 = ['Bajo','Alto'];
+var EST_COM = ['Activa','En pausa','Cerrada'];
+
+function idxPostura(v){ return POSTURAS.indexOf(v); }
+function brechaInvolucramiento(i){
+  var a=idxPostura(i.posturaActual), d=idxPostura(i.posturaDeseada);
+  if(a<0||d<0) return null;
+  return d-a;
+}
+function cuadrante(i){
+  if(i.poder==='Alto' && i.interes==='Alto') return {k:'gc', t:'Gestionar de cerca', d:'Involucrar a fondo; consultar antes de decidir.'};
+  if(i.poder==='Alto' && i.interes==='Bajo') return {k:'ms', t:'Mantener satisfecho', d:'Informar lo esencial, sin saturar.'};
+  if(i.poder==='Bajo' && i.interes==='Alto') return {k:'mi', t:'Mantener informado', d:'Comunicación frecuente; son aliados.'};
+  if(i.poder==='Bajo' && i.interes==='Bajo') return {k:'mo', t:'Monitorear', d:'Esfuerzo mínimo; revisar si cambia.'};
+  return null;
+}
+function proximaCom(c){
+  var f=c.fechaInicio; if(!f) return null;
+  var fr=c.frecuencia||'';
+  if(fr.indexOf('Única')===0) return {fecha:f, unica:true};
+  if(fr==='Por hito/entregable'||fr==='Según necesidad') return {evento:true};
+  var paso={'Diaria':1,'Semanal':7,'Quincenal':14}[fr];
+  if(paso){
+    var cur=f, g=0;
+    while(cur<HOY && g++<5000) cur=addD(cur,paso);
+    if(fr==='Diaria'){ var g2=0; while(g2++<7){ var dw=new Date(pd(cur)).getUTCDay(); if(dw===0||dw===6) cur=addD(cur,1); else break; } }
+    return {fecha:cur};
+  }
+  if(fr==='Mensual'){
+    var a=f.split('-'), y=+a[0], m=+a[1]-1, dd=+a[2], cur2=f, g3=0;
+    while(cur2<HOY && g3++<600){ m++; if(m>11){m=0;y++;} var last=new Date(Date.UTC(y,m+1,0)).getUTCDate(); cur2=iso(new Date(Date.UTC(y,m,Math.min(dd,last)))); }
+    return {fecha:cur2};
+  }
+  return null;
+}
+function chipCom(e){ var c=(e==='Activa')?'ok':(e==='En pausa')?'warn':'mute'; return '<span class="chip '+c+'">'+esc(e||'Activa')+'</span>'; }
+var ESCALA = ['Baja','Media','Alta'];
+function nivelRiesgo(r){
+  var pi = ESCALA.indexOf(r.probabilidad)+1, ii = ESCALA.indexOf(r.impacto)+1;
+  if(!pi || !ii) return {v:0, t:'Sin valorar', c:'mute'};
+  var v = pi*ii;
+  if(v>=6) return {v:v, t:'Alto', c:'risk'};
+  if(v>=3) return {v:v, t:'Medio', c:'warn'};
+  return {v:v, t:'Bajo', c:'ok'};
+}
+function chipRie(e){ var c=(e==='Cerrado'||e==='Mitigado')?'ok':(e==='Materializado')?'risk':(e==='En mitigación')?'info':'mute'; return '<span class="chip '+c+'">'+esc(e||'Abierto')+'</span>'; }
+function chipTar(e){ var c=(e==='Completada')?'ok':(e==='En curso')?'info':(e==='Bloqueada')?'risk':'mute'; return '<span class="chip '+c+'">'+esc(e||'Pendiente')+'</span>'; }
+
+/* El avance de un entregable es el promedio simple del avance de las tareas de la fase
+   que lo produce — el mismo criterio que usa el cronograma en Excel. */
+function avanceCalcEntregable(e){
+  if(!e.faseId) return null;
+  var ts = DB.tareas.filter(function(t){ return t.faseId===e.faseId; });
+  if(!ts.length) return null;
+  var suma = 0; ts.forEach(function(t){ suma += pct(t.avance); });
+  return {v: Math.round(suma/ts.length), n: ts.length};
+}
+function desajusteEntregable(e){
+  var c = avanceCalcEntregable(e);
+  if(!c) return null;
+  return (pct(e.avance) === c.v) ? null : c;
+}
+/* La evidencia se guarda tal cual la escribe el usuario; solo se vuelve enlace
+   si es una URL http(s). Cualquier otro esquema se muestra como texto plano. */
+function normalizaURL(v){
+  v = String(v==null?'':v).trim();
+  if(!v) return '';
+  if(/^https?:\/\//i.test(v)) return v;
+  if(/^[a-z][a-z0-9+.-]*:/i.test(v)) return v;              /* otro esquema: se deja como texto */
+  if(/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(v)) return 'https://'+v;  /* dominio sin esquema */
+  return v;
+}
+function linkEvidencia(v){
+  v = String(v==null?'':v).trim();
+  if(!v) return '<span style="color:var(--ink-3)">—</span>';
+  if(/^https?:\/\//i.test(v)){
+    var etq = v.replace(/^https?:\/\//i,'').replace(/\/+$/,'');
+    if(etq.length>36) etq = etq.slice(0,34)+'…';
+    return '<a class="ev" href="'+esc(v)+'" target="_blank" rel="noopener noreferrer" title="'+esc(v)+'">'
+      + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M10 6H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5"/><path d="M14 3h7v7"/><path d="M10 14 21 3"/></svg>'
+      + '<span>'+esc(etq)+'</span></a>';
+  }
+  return '<span class="t-sub">'+esc(v)+'</span>';
+}
+function entAbierto(e){ var x=e.estado||'Pendiente'; return x!=='Aprobado' && x!=='Entregado'; }
+function alertaFecha(fecha, cerrado){
+  if(!fecha || cerrado) return null;
+  var d = diasEntre(HOY, fecha);
+  if(d<0) return {c:'risk', t:'Vencido hace '+Math.abs(d)+' d'};
+  if(d===0) return {c:'warn', t:'Vence hoy'};
+  if(d<=7) return {c:'warn', t:'En '+d+' d'};
+  return null;
+}
+function barra(v, extra){ v=pct(v); return '<div class="pbar"><div class="track"><div class="fill '+(extra||clsAvance(v))+'" style="width:'+v+'%"></div></div><span class="pct">'+v+'%</span></div>'; }
+
+/* ============================ PERSISTENCIA ============================ */
+function buildDoc(){
+  var css = document.getElementById('css').textContent;
+  var js  = document.getElementById('app').textContent;
+  var data = JSON.stringify(DB).replace(/</g,'\\u003c');
+  return '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+    + '<title>Control de Portafolio<\/title>\n'
+    + '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
+    + '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+    + '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">\n'
+    + '<style id="css">' + css + '<\/style>\n</head>\n<body>\n'
+    + '<div id="root" aria-busy="true"><\/div>\n'
+    + '<script type="application/json" id="db">' + data + '<\/script>\n'
+    + '<script id="app">' + js + '<\/script>\n</body>\n</html>';
+}
+function toast(msg, ms){
+  var old=document.querySelector('.toast'); if(old) old.remove();
+  var t=document.createElement('div'); t.className='toast'; t.textContent=msg; t.setAttribute('role','status'); document.body.appendChild(t);
+  setTimeout(function(){ if(t.parentNode) t.remove(); }, ms||2600);
+}
+var pending=null, timer=null;
+function guardar(msg){
+  if(readOnly){ toast('Vista de solo lectura: no se guardan cambios.'); return; }
+  pending = msg||'Guardado';
+  saving = true; render();
+  clearTimeout(timer);
+  timer = setTimeout(hacerGuardado, 400); /* agrupa cambios rapidos en una sola publicacion */
+}
+function hacerGuardado(){
+  if(!artifactNS){ saving=false; render(); toast('Guardado no disponible en esta vista.'); return; }
+  saveUI();
+  artifactNS.publish(buildDoc()).then(function(){
+    /* la vista se recarga sola tras publicar */
+  })['catch'](function(err){
+    saving=false;
+    var code = err && err.code;
+    if(code==='conflict'){ toast('Otra persona guardó primero. Cargando la versión más reciente…', 4000); return; }
+    if(code==='not_writer'||code==='not_granted'||code==='not_declared'||code==='consent_required'||code==='capability_disabled'||code==='capability_removed'){
+      readOnly=true; render(); toast('Esta vista es de solo lectura.', 4000); return;
+    }
+    if(code==='rate_limited'){ toast('Demasiados guardados seguidos. Intenta en unos segundos.', 4000); render(); return; }
+    if(code==='too_large'){ toast('El tablero superó el tamaño máximo. Archiva proyectos cerrados.', 5000); render(); return; }
+    toast('No se pudo guardar. Vuelve a intentarlo.', 4000); render();
+  });
+}
+
+/* ============================ RENDER: MARCO ============================ */
+var TABS = [['resumen','Resumen ejecutivo'],['cronograma','Cronograma'],['entregables','Entregables'],['tareas','Tareas'],['riesgos','Riesgos'],['comunicaciones','Comunicaciones'],['recursos','Recursos y costos'],['ficha','Ficha del proyecto'],['datos','Datos']];
+
+function selProyecto(){
+  var o = '<option value="*">Todos los proyectos</option>';
+  DB.proyectos.forEach(function(p){ o += '<option value="'+esc(p.id)+'"'+(UI.proy===p.id?' selected':'')+'>'+esc((p.codigo?p.codigo+' · ':'')+p.nombre)+'</option>'; });
+  return '<select data-ui="proy" aria-label="Filtrar por proyecto">'+o+'</select>';
+}
+function shell(contenido){
+  var estado = saving ? '<span class="saving">Guardando…</span>' : '';
+  return '<header class="topbar no-print"><div class="topbar-in">'
+    + '<div class="brand"><h1>Control de Portafolio</h1><span class="sub">Gerencia de proyectos</span></div>'
+    + estado
+    + selProyecto()
+    + '<button class="btn" data-act="pdf" title="Genera el informe ejecutivo en PDF y lo entrega como archivo.">Descargar PDF</button>'
+    + '<button class="btn btn-ghost" data-act="imprimir" title="Usa el diálogo de impresión del navegador. Si el tablero está embebido, puede no responder: en ese caso usa Descargar PDF.">Imprimir</button>'
+    + (readOnly?'':'<button class="btn btn-primary" data-act="nuevo-proyecto">+ Proyecto</button>')
+    + '</div>'
+    + '<nav class="tabs" role="tablist">'+ TABS.map(function(t){
+        return '<button class="tab" role="tab" aria-selected="'+(UI.tab===t[0])+'" data-tab="'+t[0]+'">'+t[1]+'</button>'; }).join('') + '</nav>'
+    + '</header>'
+    + '<main><div class="wrap">'
+    + '<div class="print-head"><h1 style="font-size:18px">Control de Portafolio</h1><div class="t-sub">Corte al '+fdateL(HOY)+(UI.proy!=='*'?' · '+esc(nombreProy(UI.proy)):'')+'</div></div>'
+    + (readOnly?'<div class="banner ro no-print">Estás viendo este tablero en modo consulta. Puedes filtrar, revisar y exportar, pero los cambios no se guardan.</div>':'')
+    + contenido + '</div></main>';
+}
+function vacio(titulo, texto, boton){
+  return '<div class="empty"><h3>'+esc(titulo)+'</h3><p>'+esc(texto)+'</p>'+(boton&&!readOnly?boton:'')+'</div>';
+}
+
+/* ============================ VISTA: RESUMEN ============================ */
+function vistaResumen(){
+  var ps = proyectosVisibles();
+  if(!DB.proyectos.length) return '<div class="card"><div class="card-b">'+vacio(
+      'Aún no hay proyectos','Crea tu primer proyecto para empezar a construir el cronograma, los entregables y la asignación de recursos.',
+      '<div style="margin-top:14px;display:flex;gap:10px;justify-content:center"><button class="btn btn-primary" data-act="nuevo-proyecto">Crear proyecto</button><button class="btn" data-act="ejemplo">Cargar proyecto de ejemplo</button></div>')+'</div></div>';
+
+  var activos = ps.filter(function(p){ return p.estado!=='Cerrado'; });
+  var presu=0, ejec=0, sumAv=0, pesos=0;
+  ps.forEach(function(p){
+    presu += Number(p.presupuestoCOP)||0;
+    ejec  += costoEjecutado(p.id);
+    var w = (Number(p.presupuestoCOP)||0) || 1;
+    if(p.estado!=='Cerrado'){ sumAv += pct(p.avanceManual)*w; pesos += w; }
+  });
+  var avgAv = pesos? Math.round(sumAv/pesos) : 0;
+  var ids = idsVisibles();
+  var ents = DB.entregables.filter(function(e){ return ids.indexOf(e.proyectoId)>=0; });
+  var prox30 = ents.filter(function(e){ var d=diasEntre(HOY,e.fechaComprometida); return entAbierto(e) && d!=null && d>=0 && d<=30; });
+  var vencidos = ents.filter(function(e){ return entAbierto(e) && e.fechaComprometida && diasEntre(HOY,e.fechaComprometida)<0; });
+  var enRiesgo = ps.filter(function(p){ return p.estado==='En riesgo'||p.estado==='Retrasado'; });
+
+  var kpis = '<section class="kpis">'
+    + kpi('Proyectos activos', activos.length, ps.length+' en el portafolio · '+enRiesgo.length+' en riesgo o retrasados')
+    + kpi('Avance promedio', avgAv+'%', 'Ponderado por presupuesto, sobre proyectos abiertos')
+    + kpi('Entregables próximos 30 días', prox30.length, vencidos.length? vencidos.length+' vencido'+(vencidos.length===1?'':'s')+' sin entregar' : 'Ninguno vencido')
+    + kpiSm('Presupuesto vs. ejecutado', presu? moneyK(ejec)+' / '+moneyK(presu) : (ejec? moneyK(ejec)+' ejecutado' : 'Sin registrar'), presu? Math.round(ejec/presu*100)+'% del presupuesto consumido' : 'Carga el presupuesto en la ficha del proyecto')
+    + '</section>';
+
+  var filas = sortBy(ps,function(p){return (p.estado==='Cerrado'?'z':'a')+(p.fechaFin||'9999');}).map(function(p){
+    var av = pct(p.avanceManual), calc = avanceCalculado(p.id);
+    var r = rangoProyecto(p);
+    var eje = costoEjecutado(p.id), pre = Number(p.presupuestoCOP)||0;
+    var al = alertaFecha(r.fin, p.estado==='Cerrado');
+    return '<tr>'
+      + '<td><div class="t-strong">'+esc(p.nombre)+'</div><div class="t-sub mono">'+esc(p.codigo||'')+(p.cliente?' · '+esc(p.cliente):'')+'</div></td>'
+      + '<td>'+chipProy(p.estado)+'</td>'
+      + '<td>'+barra(av)+ (calc!=null && Math.abs(calc-av)>=10 ? '<div class="t-sub">calculado por tareas: '+calc+'%</div>':'') +'</td>'
+      + '<td class="mono" style="font-size:12.5px;white-space:nowrap">'+fdate(r.ini)+' → '+fdate(r.fin)+ (al?'<div><span class="chip '+al.c+'">'+esc(al.t)+'</span></div>':'') +'</td>'
+      + '<td class="r num">'+ (pre? money(pre) : '—') +'</td>'
+      + '<td class="r num"'+(pre&&eje>pre?' style="color:var(--risk);font-weight:600"':'')+'>'+ (eje? money(eje):'—') +'</td>'
+      + '<td>'+esc(p.gerente||'—')+'</td>'
+      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-proyecto" data-id="'+p.id+'">Editar</button></td>')
+      + '</tr>';
+  }).join('');
+
+  var tabla = '<section class="card"><div class="card-h"><h2>Portafolio</h2><span class="hint">'+ps.length+' proyecto'+(ps.length===1?'':'s')+'</span></div>'
+    + '<div class="card-b flush"><div class="tw"><table><thead><tr>'
+    + '<th>Proyecto</th><th>Estado</th><th style="min-width:170px">Avance</th><th>Ventana</th><th class="r">Presupuesto</th><th class="r">Ejecutado</th><th>Gerente</th>'
+    + (readOnly?'':'<th class="no-print"></th>')
+    + '</tr></thead><tbody>'+filas+'</tbody></table></div></div></section>';
+
+  return kpis + tabla + bloqueEntregas(ents);
+}
+function kpi(l,v,f){ return '<div class="kpi"><span class="k-label">'+esc(l)+'</span><span class="k-val">'+esc(String(v))+'</span><span class="k-foot">'+esc(f)+'</span></div>'; }
+function kpiSm(l,v,f){ return '<div class="kpi"><span class="k-label">'+esc(l)+'</span><span class="k-val sm">'+esc(String(v))+'</span><span class="k-foot">'+esc(f)+'</span></div>'; }
+
+function finSemana(){ var d=new Date(pd(HOY)); var dow=(d.getUTCDay()+6)%7; return addD(HOY, 6-dow); }
+function finMes(){ var d=new Date(pd(HOY)); return iso(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()+1, 0))); }
+
+function bloqueEntregas(ents){
+  var fs = finSemana(), fm = finMes();
+  var abiertas = ents.filter(function(e){ return entAbierto(e) && e.fechaComprometida; });
+  var sem = sortBy(abiertas.filter(function(e){ return e.fechaComprometida<=fs; }), function(e){return e.fechaComprometida;});
+  var mes = sortBy(abiertas.filter(function(e){ return e.fechaComprometida>fs && e.fechaComprometida<=fm; }), function(e){return e.fechaComprometida;});
+  function lista(arr, vacioTxt){
+    if(!arr.length) return '<div class="empty" style="padding:26px"><p>'+esc(vacioTxt)+'</p></div>';
+    return '<div class="tw"><table><tbody>'+arr.map(function(e){
+      var al = alertaFecha(e.fechaComprometida, false);
+      return '<tr><td style="width:96px" class="mono t-sub">'+fdate(e.fechaComprometida)+'</td>'
+        + '<td><div class="t-strong">'+esc(e.nombre)+'</div><div class="t-sub">'+esc(codProy(e.proyectoId))+' · '+esc(nombreRec(e.responsableId))+'</div></td>'
+        + '<td class="r">'+chipEnt(e.estado)+(al?' <span class="chip '+al.c+'">'+esc(al.t)+'</span>':'')
+        + (e.evidencia?'<div style="margin-top:3px">'+linkEvidencia(e.evidencia)+'</div>':'')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+  }
+  return '<section class="split">'
+    + '<div class="card"><div class="card-h"><h2>Se entrega esta semana</h2><span class="hint">hasta el '+fdate(fs)+'</span></div><div class="card-b flush">'+lista(sem,'Nada comprometido para esta semana.')+'</div></div>'
+    + '<div class="card"><div class="card-h"><h2>Resto del mes</h2><span class="hint">hasta el '+fdate(fm)+'</span></div><div class="card-b flush">'+lista(mes,'Nada más comprometido este mes.')+'</div></div>'
+    + tarjetaRiesgos()
+    + '</section>';
+}
+
+function tarjetaRiesgos(){
+  var ids = idsVisibles();
+  var abiertos = DB.riesgos.filter(function(r){ return ids.indexOf(r.proyectoId)>=0 && r.estado!=='Cerrado' && r.estado!=='Mitigado'; });
+  abiertos = abiertos.slice().sort(function(a,b){ return nivelRiesgo(b).v - nivelRiesgo(a).v; }).slice(0,5);
+  var cuerpo = abiertos.length
+    ? '<div class="tw"><table><tbody>'+abiertos.map(function(r){ var n=nivelRiesgo(r);
+        return '<tr><td><div class="t-strong">'+esc(r.nombre)+'</div>'+(r.planContingencia?'<div class="t-sub">Contingencia: '+esc(r.planContingencia)+'</div>':'')+'</td>'
+          + '<td class="r"><span class="chip '+n.c+'">'+esc(n.t)+'</span></td></tr>'; }).join('')+'</tbody></table></div>'
+    : '<div class="empty" style="padding:26px"><p>Sin riesgos abiertos registrados.</p></div>';
+  return '<div class="card"><div class="card-h"><h2>Riesgos priorizados</h2><span class="hint">'+abiertos.length+' abierto'+(abiertos.length===1?'':'s')+'</span></div><div class="card-b flush">'+cuerpo+'</div></div>';
+}
+
+/* ============================ VISTA: RIESGOS ============================ */
+function vistaRiesgos(){
+  var ids = idsVisibles();
+  var todos = DB.riesgos.filter(function(r){ return ids.indexOf(r.proyectoId)>=0; });
+  var lista = todos.filter(function(r){ return UI.rEstado==='*' || (r.estado||'Abierto')===UI.rEstado; });
+  lista = lista.slice().sort(function(a,b){ return nivelRiesgo(b).v - nivelRiesgo(a).v; });
+  var optEst = '<option value="*">Todos los estados</option>'+EST_RIE.map(function(e){return '<option'+(UI.rEstado===e?' selected':'')+'>'+e+'</option>';}).join('');
+  var cuerpo = lista.map(function(r){ var n=nivelRiesgo(r);
+    return '<tr>'
+      + '<td><div class="t-strong">'+esc(r.nombre)+'</div><div class="t-sub">'+esc(codProy(r.proyectoId))+(r.categoria?' · '+esc(r.categoria):'')+'</div></td>'
+      + '<td class="c">'+(r.probabilidad?esc(r.probabilidad):'—')+'</td>'
+      + '<td class="c">'+(r.impacto?esc(r.impacto):'—')+'</td>'
+      + '<td><span class="chip '+n.c+'">'+esc(n.t)+'</span></td>'
+      + '<td>'+esc(r.planContingencia||'—')+'</td>'
+      + '<td>'+esc(nombreRec(r.responsableId))+'</td>'
+      + '<td>'+chipRie(r.estado)+'</td>'
+      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-riesgo" data-id="'+r.id+'">Editar</button></td>')
+      + '</tr>'; }).join('');
+  return '<section class="card"><div class="card-h"><h2>Riesgos y plan de contingencia</h2><span class="hint">'+lista.length+' de '+todos.length+'</span></div>'
+    + '<div class="card-b no-print"><div class="toolbar">'
+    + '<label class="fld"><span>Estado</span><select data-ui="rEstado">'+optEst+'</select></label>'
+    + (readOnly?'':'<div class="grow"><button class="btn btn-primary" data-act="nuevo-riesgo">+ Riesgo</button></div>')
+    + '</div></div>'
+    + '<div class="card-b flush">'+(cuerpo
+      ? '<div class="tw"><table><thead><tr><th>Riesgo</th><th class="c">Probab.</th><th class="c">Impacto</th><th>Nivel</th><th>Plan de contingencia</th><th>Responsable</th><th>Estado</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+cuerpo+'</tbody></table></div>'
+      : vacio('Sin riesgos registrados','Registra los riesgos del proyecto con su probabilidad, impacto y plan de contingencia.','<div style="margin-top:12px"><button class="btn btn-primary" data-act="nuevo-riesgo">Registrar riesgo</button></div>'))
+    + '</div>'
+    + '<div class="g-legend no-print">El nivel se calcula cruzando probabilidad e impacto: Alto (rojo) exige plan activo, Medio seguimiento, Bajo monitoreo.</div>'
+    + '</section>';
+}
+
+/* ============================ VISTA: COMUNICACIONES ============================ */
+function vistaComunicaciones(){
+  var ids = idsVisibles();
+  var coms = DB.comunicaciones.filter(function(c){ return ids.indexOf(c.proyectoId)>=0; });
+  var ints = DB.interesados.filter(function(i){ return ids.indexOf(i.proyectoId)>=0; });
+
+  /* --- KPIs --- */
+  var activas = coms.filter(function(c){ return (c.estado||'Activa')==='Activa'; });
+  var prox7 = activas.filter(function(c){ var p=proximaCom(c); return p && p.fecha && diasEntre(HOY,p.fecha)>=0 && diasEntre(HOY,p.fecha)<=7; });
+  var conBrecha = ints.filter(function(i){ var b=brechaInvolucramiento(i); return b!==null && b>0; });
+  var sinValorar = ints.filter(function(i){ return !i.posturaActual; });
+  var kpis = '<section class="kpis">'
+    + kpi('Interesados registrados', ints.length, sinValorar.length? sinValorar.length+' sin valorar postura' : 'Todos valorados')
+    + kpi('Comunicaciones activas', activas.length, coms.length+' en la matriz')
+    + kpi('Próximas 7 días', prox7.length, prox7.length? prox7.map(function(c){return c.que;}).slice(0,2).join(' · ') : 'Nada programado en la semana')
+    + kpi('Brechas de involucramiento', conBrecha.length, conBrecha.length? 'Postura actual por debajo de la deseada' : 'Sin brechas abiertas')
+    + '</section>';
+
+  /* --- 1. matriz de comunicaciones --- */
+  var filasCom = sortBy(coms, function(c){ var p=proximaCom(c); return (p&&p.fecha)?p.fecha:'9999-99-99'; }).map(function(c){
+    var p = proximaCom(c);
+    var prox = '—', chip='';
+    if(p && p.fecha){
+      prox = fdate(p.fecha);
+      var dd = diasEntre(HOY,p.fecha);
+      if(p.unica && dd<0) chip = '<span class="chip mute">Ya ocurrió</span>';
+      else if(dd===0) chip = '<span class="chip warn">Hoy</span>';
+      else if(dd>0 && dd<=7) chip = '<span class="chip warn">En '+dd+' d</span>';
+    } else if(p && p.evento){ prox = 'Por evento'; }
+    return '<tr>'
+      + '<td><div class="t-strong">'+esc(c.que)+'</div><div class="t-sub">'+esc(c.porQue||'')+'</div></td>'
+      + '<td>'+esc(c.destinatarios||'—')+'</td>'
+      + '<td>'+esc(c.canal||'—')+'</td>'
+      + '<td>'+esc(c.frecuencia||'—')+'</td>'
+      + '<td class="mono" style="white-space:nowrap">'+prox+(chip?'<div>'+chip+'</div>':'')+'</td>'
+      + '<td class="t-sub">'+esc(c.responsablePrep||'—')+'</td>'
+      + '<td class="t-sub">'+esc(c.aprueba||'—')+'</td>'
+      + '<td class="t-sub">'+esc(c.envia||'—')+'</td>'
+      + '<td>'+chipCom(c.estado)+'</td>'
+      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-com" data-id="'+c.id+'">Editar</button></td>')
+      + '</tr>';
+  }).join('');
+  var bloqueCom = '<section class="card"><div class="card-h"><h2>Matriz de comunicaciones</h2><span class="hint">qué · por qué · a quién · cómo · cuándo · quién responde</span></div>'
+    + (readOnly?'':'<div class="card-b no-print"><div class="toolbar"><button class="btn btn-primary" data-act="nueva-com">+ Comunicación</button></div></div>')
+    + '<div class="card-b flush">'+(filasCom
+      ? '<div class="tw"><table><thead><tr><th style="min-width:230px">Qué se comunica / propósito</th><th>Destinatarios</th><th>Canal</th><th>Frecuencia</th><th>Próxima</th><th>Prepara</th><th>Aprueba</th><th>Envía</th><th>Estado</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+filasCom+'</tbody></table></div>'
+      : vacio('Sin matriz de comunicaciones','Define qué se comunica, a quién, por qué canal, con qué frecuencia y quién prepara, aprueba y envía cada comunicación.','<div style="margin-top:12px;display:flex;gap:10px;justify-content:center"><button class="btn btn-primary" data-act="nueva-com">Crear comunicación</button><button class="btn" data-act="plan-base">Cargar plan base PMBOK</button></div>'))
+    + '</div></section>';
+
+  /* --- 2. mapa poder / interés --- */
+  var Q = {gc:[],ms:[],mi:[],mo:[]};
+  ints.forEach(function(i){ var q=cuadrante(i); if(q) Q[q.k].push(i.nombre); });
+  var sinUbicar = ints.filter(function(i){ return !cuadrante(i); });
+  function celda(k,titulo,sub,desc){
+    return '<div class="q '+k+'"><h4>'+esc(titulo)+' <em>'+esc(sub)+'</em></h4>'
+      + (Q[k].length? '<ul>'+Q[k].map(function(n){return '<li>'+esc(n)+'</li>';}).join('')+'</ul>' : '<span class="none">Sin interesados en este cuadrante.</span>')
+      + '<span class="t-sub" style="margin-top:auto">'+esc(desc)+'</span></div>';
+  }
+  var bloqueMapa = '<section class="card"><div class="card-h"><h2>Mapa de interesados</h2><span class="hint">poder × interés</span></div><div class="card-b">'
+    + '<div class="axis"><span>Poder alto ↑</span><span>·</span><span>Interés →</span></div>'
+    + '<div class="quad">'
+    +   celda('ms','Mantener satisfecho','poder alto · interés bajo','Informar lo esencial, sin saturar.')
+    +   celda('gc','Gestionar de cerca','poder alto · interés alto','Involucrar a fondo; consultar antes de decidir.')
+    +   celda('mo','Monitorear','poder bajo · interés bajo','Esfuerzo mínimo; revisar si cambia.')
+    +   celda('mi','Mantener informado','poder bajo · interés alto','Comunicación frecuente; son aliados.')
+    + '</div>'
+    + (sinUbicar.length? '<p class="nota" style="margin-top:12px">'+sinUbicar.length+' interesado'+(sinUbicar.length===1?'':'s')+' sin poder o interés valorado, así que no aparece'+(sinUbicar.length===1?'':'n')+' en el mapa: '+esc(sinUbicar.map(function(i){return i.nombre;}).join(', '))+'.</p>' : '')
+    + '</div></section>';
+
+  /* --- 3. registro de interesados --- */
+  var filasInt = ints.map(function(i){
+    var q=cuadrante(i), b=brechaInvolucramiento(i);
+    var chipB = b===null? '<span class="chip mute">Por valorar</span>'
+      : b>0? '<span class="chip warn">Brecha de '+b+'</span>'
+      : b<0? '<span class="chip info">Por encima</span>'
+      : '<span class="chip ok">Alineado</span>';
+    return '<tr>'
+      + '<td><div class="t-strong">'+esc(i.nombre)+'</div><div class="t-sub">'+esc(i.rol||'')+(i.organizacion?' · '+esc(i.organizacion):'')+'</div></td>'
+      + '<td>'+esc(i.categoria||'—')+'</td>'
+      + '<td class="c">'+esc(i.poder||'—')+'</td>'
+      + '<td class="c">'+esc(i.interes||'—')+'</td>'
+      + '<td>'+(q?'<span class="chip '+(q.k==='gc'?'risk':q.k==='mi'?'info':q.k==='ms'?'warn':'mute')+'">'+esc(q.t)+'</span>':'<span class="chip mute">Sin ubicar</span>')+'</td>'
+      + '<td style="white-space:nowrap">'+esc(i.posturaActual||'—')+' → '+esc(i.posturaDeseada||'—')+'<div>'+chipB+'</div></td>'
+      + '<td>'+esc(i.necesidades||'—')+'</td>'
+      + '<td>'+esc(i.estrategia||'—')+'</td>'
+      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-interesado" data-id="'+i.id+'">Editar</button></td>')
+      + '</tr>';
+  }).join('');
+  var bloqueInt = '<section class="card"><div class="card-h"><h2>Registro de interesados</h2><span class="hint">'+ints.length+' registrado'+(ints.length===1?'':'s')+'</span></div>'
+    + (readOnly?'':'<div class="card-b no-print"><div class="toolbar"><button class="btn btn-primary" data-act="nuevo-interesado">+ Interesado</button></div></div>')
+    + '<div class="card-b flush">'+(filasInt
+      ? '<div class="tw"><table><thead><tr><th style="min-width:190px">Interesado</th><th>Categoría</th><th class="c">Poder</th><th class="c">Interés</th><th>Estrategia base</th><th>Postura actual → deseada</th><th>Necesita saber</th><th>Cómo lo involucro</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+filasInt+'</tbody></table></div>'
+      : vacio('Sin interesados registrados','Identificar interesados es un proceso continuo, no un evento de inicio: registra a cada persona, grupo u organización que afecte o resulte afectada por el proyecto.','<div style="margin-top:12px"><button class="btn btn-primary" data-act="nuevo-interesado">Registrar interesado</button></div>'))
+    + '</div></section>';
+
+  /* --- 4. matriz de evaluación del involucramiento --- */
+  var bloqueEval = '';
+  if(ints.length){
+    var cab = POSTURAS.map(function(pp){ return '<th class="c">'+esc(pp)+'</th>'; }).join('');
+    var filasEv = ints.map(function(i){
+      return '<tr><td class="t-strong">'+esc(i.nombre)+'</td>'
+        + POSTURAS.map(function(pp){
+            var a = i.posturaActual===pp, d = i.posturaDeseada===pp;
+            return '<td class="st">'+(a?'<span class="a">A</span>':'')+(d?'<span class="d">D</span>':'')+'</td>';
+          }).join('')
+        + '</tr>';
+    }).join('');
+    bloqueEval = '<section class="card"><div class="card-h"><h2>Matriz de evaluación del involucramiento</h2><span class="hint">A = actual · D = deseada</span></div>'
+      + '<div class="card-b flush"><div class="tw"><table class="eng"><thead><tr><th>Interesado</th>'+cab+'</tr></thead><tbody>'+filasEv+'</tbody></table></div></div>'
+      + '<div class="g-legend no-print">Cuando A y D caen en la misma columna, la estrategia está funcionando. Cuando A queda a la izquierda de D hay una brecha que debe cerrarse con acciones concretas de involucramiento, no solo con más correos.</div>'
+      + '</section>';
+  }
+
+  return kpis + bloqueCom + bloqueMapa + bloqueInt + bloqueEval;
+}
+
+/* ============================ VISTA: FICHA ============================ */
+function vistaFicha(){
+  var ps = proyectosVisibles();
+  if(!ps.length) return '<section class="card"><div class="card-b">'+vacio('Sin proyectos','Crea un proyecto para registrar su objetivo y su alcance.')+'</div></section>';
+  return ps.map(function(p){
+    var al = DB.alcance.filter(function(a){ return a.proyectoId===p.id; });
+    var tabla = al.length
+      ? '<div class="tw"><table><thead><tr><th style="width:190px">Dimensión</th><th style="width:210px">Alcance</th><th>Descripción</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'
+        + al.map(function(a){ var fuera = /fuera/i.test(a.dimension||'');
+          return '<tr'+(fuera?' style="background:var(--risk-soft)"':'')+'><td class="t-strong">'+esc(a.dimension)+'</td><td>'+esc(a.alcance)+'</td><td>'+esc(a.descripcion)+'</td>'
+            + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-alcance" data-id="'+a.id+'">Editar</button></td>')+'</tr>'; }).join('')
+        + '</tbody></table></div>'
+      : vacio('Sin alcance registrado','Agrega las dimensiones del alcance para dejar por escrito qué entra y qué queda fuera.');
+    var r = rangoProyecto(p);
+    return '<section class="card"><div class="card-h"><h2>'+esc(p.nombre)+'</h2><span class="hint">'+esc(p.codigo||'')+'</span></div>'
+      + '<div class="card-b">'
+      +   '<div class="kpis" style="margin-bottom:18px">'
+      +     kpi('Estado', p.estado||'Planeado', esc(p.cliente||'—'))
+      +     kpi('Avance', pct(p.avanceManual)+'%', 'Ventana '+fdate(r.ini)+' → '+fdate(r.fin))
+      +     kpiSm('Gerente', p.gerente||'—', 'Presupuesto '+(Number(p.presupuestoCOP)?money(p.presupuestoCOP):'sin registrar'))
+      +   '</div>'
+      +   (p.descripcion? '<h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:8px">Objetivo</h3><p style="max-width:78ch;margin:0 0 18px">'+esc(p.descripcion)+'</p>' : '')
+      +   (p.notaAvance? '<h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:8px">Nota de avance</h3><p style="max-width:78ch;margin:0 0 18px">'+esc(p.notaAvance)+'</p>' : '')
+      +   '<div class="toolbar no-print">'+(readOnly?'':'<button class="btn" data-act="edit-proyecto" data-id="'+p.id+'">Editar objetivo y datos</button><button class="btn" data-act="nuevo-alcance" data-id="'+p.id+'">+ Dimensión de alcance</button>')+'</div>'
+      + '</div>'
+      + '<div class="card-h"><h2>Alcance</h2></div><div class="card-b flush">'+tabla+'</div></section>';
+  }).join('');
+}
+
+/* ============================ VISTA: ENTREGABLES ============================ */
+function vistaEntregables(){
+  var ids = idsVisibles();
+  var todos = DB.entregables.filter(function(e){ return ids.indexOf(e.proyectoId)>=0; });
+  var lista = todos.filter(function(e){
+    if(UI.eEstado!=='*' && (e.estado||'Pendiente')!==UI.eEstado) return false;
+    if(UI.eResp!=='*' && e.responsableId!==UI.eResp) return false;
+    return true;
+  });
+  lista = sortBy(lista, function(e){ return (e.fechaComprometida||'9999-12-31'); });
+
+  var optEst = '<option value="*">Todos los estados</option>'+EST_ENT.map(function(e){return '<option'+(UI.eEstado===e?' selected':'')+'>'+e+'</option>';}).join('');
+  var optRes = '<option value="*">Todos los responsables</option>'+DB.recursos.map(function(r){return '<option value="'+r.id+'"'+(UI.eResp===r.id?' selected':'')+'>'+esc(r.nombre)+'</option>';}).join('');
+
+  var cuerpo = lista.length ? lista.map(function(e){
+    var al = alertaFecha(e.fechaComprometida, !entAbierto(e));
+    var dj = desajusteEntregable(e);
+    return '<tr'+(dj?' style="background:var(--warn-soft)"':'')+'>'
+      + '<td><div class="t-strong">'+esc(e.nombre)+'</div>'+(e.observaciones?'<div class="t-sub">'+esc(e.observaciones)+'</div>':'')+'</td>'
+      + '<td class="t-sub" style="min-width:330px;max-width:460px">'+(e.descripcion?esc(e.descripcion):'<span style="color:var(--ink-3)">Sin descripción</span>')+'</td>'
+      + '<td class="t-sub">'+esc(codProy(e.proyectoId))+'</td>'
+      + '<td>'+esc(nombreRec(e.responsableId))+'</td>'
+      + '<td class="mono">'+fdate(e.fechaComprometida)+'</td>'
+      + '<td style="min-width:158px">'+barra(e.avance)
+        + (dj? '<div class="t-sub" style="color:var(--warn)">Tareas: '+dj.v+'% ('+dj.n+')</div>' : '')
+        + (!e.faseId? '<div class="t-sub">Sin fase asociada</div>' : '') + '</td>'
+      + '<td>'+chipEnt(e.estado)+(al?' <span class="chip '+al.c+'">'+esc(al.t)+'</span>':'')+'</td>'
+      + '<td>'+linkEvidencia(e.evidencia)+'</td>'
+      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-entregable" data-id="'+e.id+'">Editar</button></td>')
+      + '</tr>';
+  }).join('') : '';
+
+  var desajustados = todos.filter(function(e){ return !!desajusteEntregable(e); });
+  var sinFase = todos.filter(function(e){ return !e.faseId; });
+  var validacion = '';
+  if(todos.length){
+    if(desajustados.length){
+      validacion = '<div class="banner val-warn"><div><strong>'+desajustados.length+' entregable'+(desajustados.length===1?'':'s')+' con el avance desajustado.</strong> '
+        + 'El avance de un entregable debe ser el promedio del avance de las tareas de su fase; '
+        + esc(desajustados.map(function(e){return e.nombre;}).slice(0,4).join(', '))+(desajustados.length>4?' y otros':'')+' no cuadra'+(desajustados.length===1?'':'n')+'.</div>'
+        + (readOnly?'':'<button class="btn btn-sm no-print" data-act="ajustar-avances" style="margin-left:auto;flex:none">Ajustar al cálculo</button>')
+        + '</div>';
+    } else {
+      var conFase = todos.length - sinFase.length;
+      validacion = '<div class="banner val-ok">Avance validado: '+conFase+' de '+todos.length+' entregable'+(todos.length===1?'':'s')+' cuadra'+(conFase===1?'':'n')+' con el promedio de las tareas de su fase'
+        + (sinFase.length? ' · '+sinFase.length+' sin fase asociada, así que no se puede validar' : '')+'.</div>';
+    }
+  }
+  return validacion + '<section class="card"><div class="card-h"><h2>Entregables</h2>'
+    + '<span class="hint">'+lista.length+' de '+todos.length+'</span></div>'
+    + '<div class="card-b no-print"><div class="toolbar">'
+    + '<label class="fld"><span>Estado</span><select data-ui="eEstado">'+optEst+'</select></label>'
+    + '<label class="fld"><span>Responsable</span><select data-ui="eResp">'+optRes+'</select></label>'
+    + (readOnly?'':'<div class="grow"><button class="btn btn-primary" data-act="nuevo-entregable">+ Entregable</button></div>')
+    + '</div></div>'
+    + '<div class="card-b flush">'+ (cuerpo
+      ? '<div class="tw"><table><thead><tr><th style="min-width:210px">Entregable</th><th>De qué trata</th><th>Proyecto</th><th>Responsable</th><th>Fecha comprometida</th><th>Avance</th><th>Estado</th><th>Evidencia</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+cuerpo+'</tbody></table></div>'
+      : vacio('Sin entregables','Registra los productos que debes entregar, con responsable y fecha comprometida.','<div style="margin-top:12px"><button class="btn btn-primary" data-act="nuevo-entregable">Crear entregable</button></div>'))
+    + '</div></section>';
+}
+
+/* ============================ VISTA: TAREAS ============================ */
+function vistaTareas(){
+  var ids = idsVisibles();
+  var todas = DB.tareas.filter(function(t){ return ids.indexOf(t.proyectoId)>=0; });
+  var lista = todas.filter(function(t){
+    if(UI.tFase!=='*' && t.faseId!==UI.tFase) return false;
+    if(UI.tEstado!=='*' && (t.estado||'Pendiente')!==UI.tEstado) return false;
+    return true;
+  });
+  lista = sortBy(lista, function(t){ return (t.fechaInicio||'9999')+(t.fechaFin||''); });
+
+  var fasesOpt = '<option value="*">Todas las fases</option>';
+  proyectosVisibles().forEach(function(p){
+    var fs = fasesDe(p.id); if(!fs.length) return;
+    fasesOpt += '<optgroup label="'+esc(p.codigo||p.nombre)+'">'+fs.map(function(f){ return '<option value="'+f.id+'"'+(UI.tFase===f.id?' selected':'')+'>'+esc(f.nombre)+'</option>'; }).join('')+'</optgroup>';
+  });
+  var estOpt = '<option value="*">Todos los estados</option>'+EST_TAR.map(function(e){return '<option'+(UI.tEstado===e?' selected':'')+'>'+e+'</option>';}).join('');
+
+  var cuerpo = lista.map(function(t){
+    var f = byId(DB.fases,t.faseId);
+    var preds = (t.predecesorasIds||[]).map(function(id){ var x=byId(DB.tareas,id); return x?x.nombre:'?'; });
+    var conflicto = (t.predecesorasIds||[]).some(function(id){ var x=byId(DB.tareas,id); return x && x.fechaFin && t.fechaInicio && t.fechaInicio < x.fechaFin; });
+    var al = alertaFecha(t.fechaFin, t.estado==='Completada');
+    var dur = (t.fechaInicio&&t.fechaFin)? (diasEntre(t.fechaInicio,t.fechaFin)+1) : null;
+    return '<tr>'
+      + '<td><div class="t-strong">'+(t.esHito?'◆ ':'')+esc(t.nombre)+'</div><div class="t-sub">'+esc(codProy(t.proyectoId))+(f?' · '+esc(f.nombre):'')+'</div></td>'
+      + '<td>'+esc(nombreRec(t.responsableId))+'</td>'
+      + '<td class="mono" style="white-space:nowrap">'+fdate(t.fechaInicio)+' → '+fdate(t.fechaFin)+'</td>'
+      + '<td class="c num">'+(dur!=null?dur+' d':'—')+'</td>'
+      + '<td style="min-width:150px">'+barra(t.avance)+'</td>'
+      + '<td>'+chipTar(t.estado)+(al?' <span class="chip '+al.c+'">'+esc(al.t)+'</span>':'')+'</td>'
+      + '<td class="t-sub">'+(preds.length?esc(preds.join(', ')):'—')+(conflicto?' <span class="chip risk">Choca con predecesora</span>':'')+'</td>'
+      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-tarea" data-id="'+t.id+'">Editar</button></td>')
+      + '</tr>';
+  }).join('');
+
+  return '<section class="card"><div class="card-h"><h2>Tareas</h2><span class="hint">'+lista.length+' de '+todas.length+'</span></div>'
+    + '<div class="card-b no-print"><div class="toolbar">'
+    + '<label class="fld"><span>Fase</span><select data-ui="tFase">'+fasesOpt+'</select></label>'
+    + '<label class="fld"><span>Estado</span><select data-ui="tEstado">'+estOpt+'</select></label>'
+    + (readOnly?'':'<div class="grow"><button class="btn" data-act="nueva-fase">+ Fase</button> <button class="btn btn-primary" data-act="nueva-tarea">+ Tarea</button></div>')
+    + '</div></div>'
+    + '<div class="card-b flush">'+ (cuerpo
+      ? '<div class="tw"><table><thead><tr><th>Tarea</th><th>Responsable</th><th>Fechas</th><th class="c">Dur.</th><th>Avance</th><th>Estado</th><th>Predecesoras</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+cuerpo+'</tbody></table></div>'
+      : vacio('Sin tareas','Crea al menos una fase y luego las tareas que la componen para ver el cronograma.','<div style="margin-top:12px;display:flex;gap:10px;justify-content:center"><button class="btn" data-act="nueva-fase">Crear fase</button><button class="btn btn-primary" data-act="nueva-tarea">Crear tarea</button></div>'))
+    + '</div></section>';
+}
+
+/* ============================ VISTA: CRONOGRAMA ============================ */
+var PXD = {dia:30, semana:11, mes:4};
+function filasGantt(){
+  var filas = [];
+  proyectosVisibles().forEach(function(p){
+    var fs = fasesDe(p.id);
+    var ts = tareasDe(p.id);
+    if(DB.proyectos.length>1 || UI.proy==='*'){
+      var r = rangoProyecto(p);
+      filas.push({tipo:'proy', id:p.id, nombre:(p.codigo?p.codigo+' · ':'')+p.nombre, ini:r.ini, fin:r.fin, avance:pct(p.avanceManual)});
+    }
+    fs.forEach(function(f){
+      var tf = sortBy(ts.filter(function(t){return t.faseId===f.id;}), function(t){return (t.fechaInicio||'9999')+(t.fechaFin||'');});
+      var ini=f.fechaInicio, fin=f.fechaFin;
+      tf.forEach(function(t){ if(t.fechaInicio&&(!ini||t.fechaInicio<ini)) ini=t.fechaInicio; if(t.fechaFin&&(!fin||t.fechaFin>fin)) fin=t.fechaFin; });
+      filas.push({tipo:'fase', id:f.id, nombre:f.nombre, ini:ini, fin:fin});
+      tf.forEach(function(t){ filas.push({tipo:'tarea', id:t.id, t:t, nombre:t.nombre, ini:t.fechaInicio, fin:t.fechaFin}); });
+    });
+    var sf = sortBy(ts.filter(function(t){ return !t.faseId || !byId(DB.fases,t.faseId); }), function(t){return (t.fechaInicio||'9999');});
+    if(sf.length){
+      filas.push({tipo:'fase', id:'sf-'+p.id, nombre:'Sin fase asignada', ini:null, fin:null});
+      sf.forEach(function(t){ filas.push({tipo:'tarea', id:t.id, t:t, nombre:t.nombre, ini:t.fechaInicio, fin:t.fechaFin}); });
+    }
+  });
+  return filas;
+}
+function vistaCronograma(){
+  var filas = filasGantt();
+  var conFecha = filas.filter(function(f){ return f.ini && f.fin; });
+  var controles = '<div class="card-b no-print"><div class="toolbar">'
+    + '<label class="fld"><span>Escala</span><select data-ui="zoom">'
+    + ['dia','semana','mes'].map(function(z){ return '<option value="'+z+'"'+(UI.zoom===z?' selected':'')+'>'+({dia:'Días',semana:'Semanas',mes:'Meses'})[z]+'</option>'; }).join('')
+    + '</select></label>'
+    + (readOnly?'':'<div class="grow"><button class="btn" data-act="nueva-fase">+ Fase</button> <button class="btn btn-primary" data-act="nueva-tarea">+ Tarea</button></div>')
+    + '</div></div>';
+
+  if(!conFecha.length){
+    return '<section class="card"><div class="card-h"><h2>Cronograma</h2></div>'+controles
+      + '<div class="card-b flush">'+vacio('Nada que graficar todavía','Agrega fases y tareas con fecha de inicio y fin para dibujar el Gantt.','<div style="margin-top:12px;display:flex;gap:10px;justify-content:center"><button class="btn" data-act="nueva-fase">Crear fase</button><button class="btn btn-primary" data-act="nueva-tarea">Crear tarea</button></div>')+'</div></section>';
+  }
+
+  var min=null,max=null;
+  conFecha.forEach(function(f){ if(min===null||f.ini<min) min=f.ini; if(max===null||f.fin>max) max=f.fin; });
+  if(HOY<min) min=HOY; if(HOY>max) max=HOY;
+  min = addD(min,-3); max = addD(max,4);
+  var d0 = dnum(min), total = dnum(max)-d0+1, px = PXD[UI.zoom]||11, W = Math.max(total*px, 600);
+  function x(fecha){ return (dnum(fecha)-d0)*px; }
+
+  /* --- encabezado: meses + marcas --- */
+  var MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var MESC=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var meses='', cur=new Date(pd(min)); cur=new Date(Date.UTC(cur.getUTCFullYear(),cur.getUTCMonth(),1));
+  while(iso(cur)<=max){
+    var ini = iso(cur)<min? min : iso(cur);
+    var sig = new Date(Date.UTC(cur.getUTCFullYear(),cur.getUTCMonth()+1,1));
+    var fin = iso(sig)>max? addD(max,1) : iso(sig);
+    var w = (dnum(fin)-dnum(ini))*px;
+    if(w>4) meses += '<div class="g-month" style="left:'+x(ini)+'px;width:'+w+'px">'+(w>66?MES[cur.getUTCMonth()]+' '+cur.getUTCFullYear():MESC[cur.getUTCMonth()]+' '+String(cur.getUTCFullYear()).slice(2))+'</div>';
+    cur = sig;
+  }
+  var ticks='', grid='';
+  if(UI.zoom==='dia'||UI.zoom==='semana'){
+    var step = UI.zoom==='dia'?1:7;
+    var start = min;
+    if(step===7){ var dow=(new Date(pd(min)).getUTCDay()+6)%7; start = addD(min,-dow); if(start<min) start=addD(start,7); }
+    for(var s=start; s<=max; s=addD(s,step)){
+      var dt=new Date(pd(s)), we=(dt.getUTCDay()===0||dt.getUTCDay()===6);
+      ticks += '<div class="g-tick'+(step===1&&we?' we':'')+'" style="left:'+x(s)+'px;width:'+(step*px)+'px">'+(step===1?dt.getUTCDate():dt.getUTCDate()+'/'+(dt.getUTCMonth()+1))+'</div>';
+      grid  += '<div class="g-grid'+(step===1&&we?' we':'')+'" style="left:'+x(s)+'px;width:'+(step===1?px:0)+'px"></div>';
+    }
+  } else {
+    var c2=new Date(pd(min)); c2=new Date(Date.UTC(c2.getUTCFullYear(),c2.getUTCMonth(),1));
+    while(iso(c2)<=max){
+      var i2 = iso(c2)<min?min:iso(c2);
+      var n2 = new Date(Date.UTC(c2.getUTCFullYear(),c2.getUTCMonth()+1,1));
+      var w2 = ((iso(n2)>max?dnum(addD(max,1)):dnum(iso(n2)))-dnum(i2))*px;
+      ticks += '<div class="g-tick" style="left:'+x(i2)+'px;width:'+w2+'px">'+MESC[c2.getUTCMonth()]+'</div>';
+      grid  += '<div class="g-grid" style="left:'+x(i2)+'px"></div>';
+      c2=n2;
+    }
+  }
+
+  /* --- filas --- */
+  var H=32, idxTarea={}, izq='', der='';
+  filas.forEach(function(f,i){
+    if(f.tipo==='tarea') idxTarea[f.id]=i;
+    var clase = f.tipo==='tarea'?'task':'phase';
+    var meta = '';
+    if(f.tipo==='tarea'){ meta = '<span class="t-sub mono" style="margin-left:auto;flex:none">'+(f.t.avance?pct(f.t.avance)+'%':'')+'</span>'; }
+    izq += '<div class="g-row '+clase+'"'+(f.tipo==='proy'?' style="font-weight:700"':'')+'><span class="nm" title="'+esc(f.nombre)+'">'+(f.tipo==='tarea'&&f.t.esHito?'◆ ':'')+esc(f.nombre)+'</span>'+meta+'</div>';
+
+    var barra_='';
+    if(f.ini && f.fin){
+      var L=x(f.ini), Wb=Math.max((dnum(f.fin)-dnum(f.ini)+1)*px, 3);
+      if(f.tipo==='tarea' && f.t.esHito){
+        barra_ = '<div class="g-ms" style="left:'+(L-7)+'px" title="'+esc(f.nombre)+' · '+fdate(f.ini)+'"></div>';
+      } else if(f.tipo==='tarea'){
+        var t=f.t, av=pct(t.avance), tarde = (t.estado!=='Completada' && t.fechaFin && t.fechaFin<HOY);
+        var cl = t.estado==='Completada'?'done':(tarde?'late':'');
+        barra_ = '<div class="g-bar '+cl+'" style="left:'+L+'px;width:'+Wb+'px" title="'+esc(t.nombre)+' · '+fdate(t.fechaInicio)+' → '+fdate(t.fechaFin)+' · '+av+'%">'
+               + '<div class="g-fill" style="width:'+(100-av)+'%;margin-left:'+av+'%"></div></div>';
+      } else {
+        barra_ = '<div class="g-bar phase" style="left:'+L+'px;width:'+Wb+'px" title="'+esc(f.nombre)+'"></div>';
+      }
+    }
+    der += '<div class="g-row '+clase+'">'+barra_+'</div>';
+  });
+
+  /* --- dependencias --- */
+  var paths='';
+  DB.tareas.forEach(function(t){
+    if(!(t.id in idxTarea) || !t.predecesorasIds) return;
+    t.predecesorasIds.forEach(function(pidT){
+      var p = byId(DB.tareas,pidT);
+      if(!p || !(p.id in idxTarea) || !p.fechaFin || !t.fechaInicio) return;
+      var x1 = x(p.fechaFin)+ (p.esHito?7:(px)), y1 = idxTarea[p.id]*H + H/2;
+      var x2 = x(t.fechaInicio) - (t.esHito?8:2), y2 = idxTarea[t.id]*H + H/2;
+      var mx = Math.max(x1+9, x2-9);
+      var mal = t.fechaInicio < p.fechaFin;
+      paths += '<path d="M'+x1+' '+y1+' H'+mx+' V'+y2+' H'+x2+'" fill="none" stroke="'+(mal?'var(--risk)':'var(--line-strong)')+'" stroke-width="1.3"'+(mal?'':' stroke-dasharray="3 3"')+'/>'
+             + '<path d="M'+x2+' '+y2+' l-5 -3.5 v7 z" fill="'+(mal?'var(--risk)':'var(--line-strong)')+'"/>';
+    });
+  });
+
+  var altura = filas.length*H;
+  var hoyX = x(HOY);
+  var cuerpo = '<div class="gantt">'
+    + '<div class="g-left"><div class="g-head">Actividad</div>'+izq+'</div>'
+    + '<div class="g-right" data-hoy="'+Math.round(hoyX)+'"><div class="g-canvas" style="width:'+W+'px">'
+    +   '<div class="g-head">'+meses+ticks+'</div>'
+    +   '<div style="position:relative;height:'+altura+'px">'
+    +     '<div style="position:absolute;inset:0">'+grid+'</div>'
+    +     (hoyX>=0&&hoyX<=W?'<div class="g-today" style="left:'+hoyX+'px"></div>':'')
+    +     '<svg class="g-dep" width="'+W+'" height="'+altura+'">'+paths+'</svg>'
+    +     '<div style="position:relative">'+der+'</div>'
+    +   '</div>'
+    + '</div></div></div>';
+
+  var leyenda = '<div class="g-legend no-print">'
+    + '<span><i class="sw" style="background:var(--ink-2);opacity:.55"></i> Fase</span>'
+    + '<span><i class="sw" style="background:var(--accent)"></i> Tarea (relleno = avance)</span>'
+    + '<span><i class="sw" style="background:var(--ok)"></i> Completada</span>'
+    + '<span><i class="sw" style="background:var(--risk)"></i> Vencida sin cerrar</span>'
+    + '<span><i class="sw" style="background:var(--warn);transform:rotate(45deg);width:10px;height:10px"></i> Hito</span>'
+    + '<span><i class="sw" style="background:var(--risk);width:2px;height:12px"></i> Hoy ('+fdate(HOY)+')</span>'
+    + '<span>Flecha roja continua = la tarea arranca antes de que cierre su predecesora</span>'
+    + '</div>';
+
+  return '<section class="card"><div class="card-h"><h2>Cronograma</h2><span class="hint">'+fdateL(min)+' — '+fdateL(max)+'</span></div>'
+    + controles + '<div class="card-b flush">'+cuerpo+'</div>'+leyenda+'</section>';
+}
+
+/* ============================ VISTA: RECURSOS Y COSTOS ============================ */
+function costoEjecutado(pid){
+  var s=0; DB.costos.forEach(function(c){ if(c.proyectoId===pid && c.estado==='Ejecutado') s+=Number(c.montoCOP)||0; });
+  return s;
+}
+function costoPlaneado(pid){
+  var s=0; DB.costos.forEach(function(c){ if(c.proyectoId===pid) s+=Number(c.montoCOP)||0; });
+  return s;
+}
+function vistaRecursos(){
+  var ps = proyectosVisibles(), ids = idsVisibles();
+
+  /* --- matriz de asignacion --- */
+  var matriz;
+  if(!DB.recursos.length){
+    matriz = vacio('Sin recursos registrados','Agrega a las personas del equipo con su rol para poder asignarlas a los proyectos.','<div style="margin-top:12px"><button class="btn btn-primary" data-act="nuevo-recurso">Agregar persona</button></div>');
+  } else {
+    var cab = ps.map(function(p){ return '<th class="c" title="'+esc(p.nombre)+'">'+esc(p.codigo||p.nombre)+'</th>'; }).join('');
+    var filas = DB.recursos.map(function(r){
+      var tot=0;
+      var celdas = ps.map(function(p){
+        var a=0; DB.asignaciones.forEach(function(x){ if(x.recursoId===r.id && x.proyectoId===p.id) a+=Number(x.porcentajeAsignacion)||0; });
+        tot+=a;
+        return '<td class="cell">'+(a? a+'%' : '<span style="color:var(--ink-3)">·</span>')+'</td>';
+      }).join('');
+      return '<tr><td><div class="t-strong">'+esc(r.nombre)+'</div><div class="t-sub">'+esc(r.rol||'')+(r.area?' · '+esc(r.area):'')+'</div></td>'
+        + celdas
+        + '<td class="tot '+(tot>100?'over':'')+'">'+tot+'%</td>'
+        + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-recurso" data-id="'+r.id+'">Editar</button></td>')
+        + '</tr>';
+    }).join('');
+    matriz = '<div class="tw"><table class="matrix"><thead><tr><th>Persona</th>'+cab+'<th class="c">Total</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+filas+'</tbody></table></div>';
+  }
+
+  var sobre = DB.recursos.filter(function(r){
+    var t=0; DB.asignaciones.forEach(function(x){ if(x.recursoId===r.id) t+=Number(x.porcentajeAsignacion)||0; }); return t>100;
+  });
+
+  var bloqueMatriz = '<section class="card"><div class="card-h"><h2>Asignación del equipo</h2>'
+    + '<span class="hint">'+(sobre.length? sobre.length+' persona'+(sobre.length===1?'':'s')+' por encima del 100%' : 'Sin sobreasignación')+'</span></div>'
+    + (readOnly?'':'<div class="card-b no-print"><div class="toolbar"><button class="btn" data-act="nuevo-recurso">+ Persona</button><button class="btn" data-act="nueva-asignacion">+ Asignación</button></div></div>')
+    + '<div class="card-b flush">'+matriz+'</div></section>';
+
+  /* --- presupuesto --- */
+  var filasP = ps.map(function(p){
+    var pre=Number(p.presupuestoCOP)||0, eje=costoEjecutado(p.id), pla=costoPlaneado(p.id);
+    var uso = pre? Math.round(eje/pre*100) : 0;
+    return '<tr><td><div class="t-strong">'+esc(p.nombre)+'</div><div class="t-sub mono">'+esc(p.codigo||'')+'</div></td>'
+      + '<td class="r num">'+(pre?money(pre):'—')+'</td>'
+      + '<td class="r num">'+(pla?money(pla):'—')+'</td>'
+      + '<td class="r num">'+(eje?money(eje):'—')+'</td>'
+      + '<td style="min-width:150px">'+barra(uso, uso>100?'risk':(uso>85?'warn':'ok'))+'</td>'
+      + '<td class="r num"'+(pre-eje<0?' style="color:var(--risk);font-weight:600"':'')+'>'+(pre?money(pre-eje):'—')+'</td></tr>';
+  }).join('');
+  var bloquePre = '<section class="card"><div class="card-h"><h2>Presupuesto vs. ejecutado</h2><span class="hint">Pesos colombianos</span></div>'
+    + (readOnly?'':'<div class="card-b no-print"><div class="toolbar"><button class="btn" data-act="nuevo-costo">+ Registro de costo</button></div></div>')
+    + '<div class="card-b flush">'+(ps.length? '<div class="tw"><table><thead><tr><th>Proyecto</th><th class="r">Presupuesto</th><th class="r">Costos registrados</th><th class="r">Ejecutado</th><th>Consumo</th><th class="r">Saldo</th></tr></thead><tbody>'+filasP+'</tbody></table></div>' : vacio('Sin proyectos','Crea un proyecto para registrar su presupuesto.'))+'</div></section>';
+
+  /* --- detalle de costos --- */
+  var cs = sortBy(DB.costos.filter(function(c){ return ids.indexOf(c.proyectoId)>=0; }), function(c){ return c.fecha||'9999'; }).reverse();
+  var bloqueCos = '<section class="card"><div class="card-h"><h2>Detalle de costos</h2><span class="hint">'+cs.length+' registro'+(cs.length===1?'':'s')+'</span></div>'
+    + '<div class="card-b flush">'+(cs.length? '<div class="tw"><table><thead><tr><th>Fecha</th><th>Concepto</th><th>Proyecto</th><th>Tipo</th><th>Estado</th><th class="r">Monto</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'
+      + cs.map(function(c){ return '<tr><td class="mono">'+fdate(c.fecha)+'</td><td>'+esc(c.concepto)+'</td><td class="t-sub">'+esc(codProy(c.proyectoId))+'</td><td>'+esc(c.tipo||'—')+'</td>'
+        + '<td><span class="chip '+(c.estado==='Ejecutado'?'ok':'mute')+'">'+esc(c.estado||'Planeado')+'</span></td><td class="r num">'+money(c.montoCOP)+'</td>'
+        + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-costo" data-id="'+c.id+'">Editar</button></td>')+'</tr>'; }).join('')
+      + '</tbody></table></div>' : vacio('Sin costos registrados','Registra los costos planeados y ejecutados para seguir el consumo del presupuesto.'))+'</div></section>';
+
+  return bloqueMatriz + bloquePre + bloqueCos;
+}
+
+/* ============================ VISTA: DATOS ============================ */
+function vistaDatos(){
+  var conteo = [['Proyectos',DB.proyectos.length],['Fases',DB.fases.length],['Tareas',DB.tareas.length],['Entregables',DB.entregables.length],['Riesgos',DB.riesgos.length],['Interesados',DB.interesados.length],['Comunicaciones',DB.comunicaciones.length],['Personas',DB.recursos.length],['Asignaciones',DB.asignaciones.length],['Registros de costo',DB.costos.length]];
+  var listaProy = DB.proyectos.length ? '<div class="tw"><table><thead><tr><th>Proyecto</th><th>Fases</th><th>Tareas</th><th>Entregables</th>'+(readOnly?'':'<th class="no-print r"></th>')+'</tr></thead><tbody>'
+    + DB.proyectos.map(function(p){ return '<tr><td><div class="t-strong">'+esc(p.nombre)+'</div><div class="t-sub mono">'+esc(p.codigo||'')+'</div></td>'
+      + '<td class="num">'+fasesDe(p.id).length+'</td><td class="num">'+tareasDe(p.id).length+'</td><td class="num">'+DB.entregables.filter(function(e){return e.proyectoId===p.id;}).length+'</td>'
+      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-proyecto" data-id="'+p.id+'">Editar</button> <button class="btn btn-sm btn-danger" data-act="del-proyecto" data-id="'+p.id+'">Eliminar</button></td>')
+      + '</tr>'; }).join('') + '</tbody></table></div>' : vacio('Sin proyectos','Crea el primero para empezar.');
+
+  return '<section class="card"><div class="card-h"><h2>Contenido del tablero</h2></div><div class="card-b">'
+    + '<div class="kpis">'+conteo.map(function(c){ return '<div class="kpi"><span class="k-label">'+c[0]+'</span><span class="k-val sm">'+c[1]+'</span></div>'; }).join('')+'</div></div></section>'
+
+    + '<section class="card"><div class="card-h"><h2>Proyectos</h2>'+(readOnly?'':'<span class="hint"><button class="btn btn-sm btn-primary" data-act="nuevo-proyecto">+ Proyecto</button></span>')+'</div>'
+    + '<div class="card-b flush">'+listaProy+'</div></section>'
+
+    + '<section class="card"><div class="card-h"><h2>Exportar</h2><span class="hint">CSV compatible con Excel (separador punto y coma)</span></div><div class="card-b">'
+    + '<div class="toolbar">'
+    + ['portafolio','tareas','entregables','riesgos','interesados','comunicaciones','recursos','costos'].map(function(k){ return '<button class="btn" data-act="export" data-k="'+k+'">'+k.charAt(0).toUpperCase()+k.slice(1)+'</button>'; }).join('')
+    + '</div><p class="t-sub" style="margin:12px 0 0">Si tu navegador no permite descargas desde este panel, el botón te avisará y podrás copiar los datos desde las tablas.</p></div></section>'
+
+    + (readOnly?'' : '<section class="card"><div class="card-h"><h2>Estructura y limpieza</h2></div><div class="card-b"><div class="toolbar">'
+      + '<button class="btn" data-act="ejemplo">Cargar portafolio de demostración</button>'
+      + '<button class="btn" data-act="plan-base">Cargar plan de comunicaciones base</button>'
+      + '<button class="btn btn-danger" data-act="borrar-todo">Vaciar el tablero</button>'
+      + '</div><p class="t-sub" style="margin:12px 0 0">El portafolio de demostración crea dos proyectos ficticios con fases, dependencias, entregables, equipo, costos y riesgos, para conocer la herramienta con datos dentro. Vaciar el tablero borra todo de forma permanente.</p></div></section>');
+}
+
+/* ============================ FORMULARIOS ============================ */
+var modalActual = null;
+function optsSel(lista, val, vacio){
+  var o = vacio? '<option value="">'+esc(vacio)+'</option>' : '';
+  lista.forEach(function(x){
+    var v = typeof x==='string'? x : x.v, t = typeof x==='string'? x : x.t;
+    o += '<option value="'+esc(v)+'"'+(String(val)===String(v)?' selected':'')+'>'+esc(t)+'</option>';
+  });
+  return o;
+}
+function campoHTML(c, val){
+  var id='f_'+c.k, cls = c.full?' class="full"':'';
+  var inner;
+  if(c.tipo==='select') inner = '<select id="'+id+'">'+optsSel(c.opts, val, c.vacio)+'</select>';
+  else if(c.tipo==='selectg'){
+    var o = c.vacio? '<option value="">'+esc(c.vacio)+'</option>' : '';
+    c.grupos.forEach(function(g){ o += '<optgroup label="'+esc(g.label)+'">'+optsSel(g.opts, val)+'</optgroup>'; });
+    inner = '<select id="'+id+'">'+o+'</select>';
+  }
+  else if(c.tipo==='textarea') inner = '<textarea id="'+id+'" rows="3">'+esc(val==null?'':val)+'</textarea>';
+  else if(c.tipo==='check') return '<div'+cls+'><label class="chkline"><input type="checkbox" id="'+id+'"'+(val?' checked':'')+'> '+esc(c.label)+'</label></div>';
+  else if(c.tipo==='multi'){
+    var arr = Array.isArray(val)?val:[];
+    inner = '<div class="multi" id="'+id+'">'+(c.opts.length? c.opts.map(function(x){
+      return '<label class="chkline"><input type="checkbox" value="'+esc(x.v)+'"'+(arr.indexOf(x.v)>=0?' checked':'')+'> '+esc(x.t)+'</label>';
+    }).join('') : '<span class="t-sub">No hay opciones todavía.</span>')+'</div>';
+  }
+  else inner = '<input type="'+(c.tipo||'text')+'" id="'+id+'" value="'+esc(val==null?'':val)+'"'+(c.tipo==='number'?' step="'+(c.step||'1')+'" min="'+(c.min!=null?c.min:0)+'"':'')+'>';
+  return '<label class="fld"'+cls+'><span>'+esc(c.label)+(c.req?' *':'')+'</span>'+inner+'</label>';
+}
+function abrirForm(spec){
+  cerrarForm();
+  var vals = spec.valores||{};
+  var ovl = document.createElement('div'); ovl.className='ovl'; ovl.setAttribute('role','dialog'); ovl.setAttribute('aria-modal','true');
+  ovl.innerHTML = '<div class="modal"><div class="card-h"><h2>'+esc(spec.titulo)+'</h2></div>'
+    + '<div class="modal-b">'+spec.campos.map(function(c){ return campoHTML(c, vals[c.k]); }).join('')+'</div>'
+    + '<div class="modal-f"><span class="err" id="f_err"></span>'
+    + (spec.onEliminar?'<button class="btn btn-danger" data-f="del">Eliminar</button>':'')
+    + '<button class="btn" data-f="cancel">Cancelar</button><button class="btn btn-primary" data-f="ok">Guardar</button></div></div>';
+  document.body.appendChild(ovl);
+  modalActual = ovl;
+  var first = ovl.querySelector('input,select,textarea'); if(first) first.focus();
+  ovl.addEventListener('click', function(ev){
+    if(ev.target===ovl){ cerrarForm(); return; }
+    var b = ev.target.closest('[data-f]'); if(!b) return;
+    var f = b.getAttribute('data-f');
+    if(f==='cancel'){ cerrarForm(); return; }
+    if(f==='del'){ if(confirm('¿Eliminar definitivamente? Esta acción no se puede deshacer.')){ spec.onEliminar(); cerrarForm(); } return; }
+    if(f==='ok'){
+      var out={}, falta=null;
+      spec.campos.forEach(function(c){
+        var el = ovl.querySelector('#f_'+c.k);
+        var v;
+        if(c.tipo==='check') v = el.checked;
+        else if(c.tipo==='multi') v = Array.prototype.slice.call(el.querySelectorAll('input:checked')).map(function(i){return i.value;});
+        else if(c.tipo==='number') v = el.value===''?null:Number(el.value);
+        else v = el.value.trim();
+        if(c.req && (v===''||v==null||(Array.isArray(v)&&!v.length))) falta = falta||c.label;
+        out[c.k]=v;
+      });
+      if(falta){ ovl.querySelector('#f_err').textContent = 'Falta completar: '+falta; return; }
+      var msg = spec.validar? spec.validar(out) : null;
+      if(msg){ ovl.querySelector('#f_err').textContent = msg; return; }
+      spec.onGuardar(out); cerrarForm();
+    }
+  });
+  document.addEventListener('keydown', escHandler);
+}
+function escHandler(e){ if(e.key==='Escape') cerrarForm(); }
+function cerrarForm(){ if(modalActual){ modalActual.remove(); modalActual=null; document.removeEventListener('keydown', escHandler); } }
+
+function optProyectos(){ return DB.proyectos.map(function(p){ return {v:p.id, t:(p.codigo?p.codigo+' · ':'')+p.nombre}; }); }
+function optRecursos(){ return DB.recursos.map(function(r){ return {v:r.id, t:r.nombre+(r.rol?' — '+r.rol:'')}; }); }
+function gruposFases(){ return DB.proyectos.map(function(p){ return {label:(p.codigo||p.nombre), opts: fasesDe(p.id).map(function(f){ return {v:f.id,t:f.nombre}; })}; }).filter(function(g){return g.opts.length;}); }
+function proyDefecto(){ return UI.proy!=='*'? UI.proy : (DB.proyectos[0]?DB.proyectos[0].id:''); }
+function valFechas(o, a, b){ if(o[a]&&o[b]&&o[b]<o[a]) return 'La fecha final no puede ser anterior a la inicial.'; return null; }
+
+function formProyecto(p){
+  abrirForm({ titulo: p?'Editar proyecto':'Nuevo proyecto', valores: p||{estado:'Planeado', avanceManual:0},
+    campos:[
+      {k:'nombre',label:'Nombre del proyecto',req:true,full:true},
+      {k:'codigo',label:'Código / CECO'},
+      {k:'cliente',label:'Cliente'},
+      {k:'gerente',label:'Gerente responsable'},
+      {k:'estado',label:'Estado',tipo:'select',opts:EST_PROY},
+      {k:'fechaInicio',label:'Inicio',tipo:'date'},
+      {k:'fechaFin',label:'Fin previsto',tipo:'date'},
+      {k:'avanceManual',label:'Avance (%)',tipo:'number',min:0},
+      {k:'presupuestoCOP',label:'Presupuesto (COP)',tipo:'number',min:0},
+      {k:'notaAvance',label:'Nota de avance / justificación',tipo:'textarea',full:true},
+      {k:'descripcion',label:'Alcance / descripción',tipo:'textarea',full:true}
+    ],
+    validar:function(o){ return valFechas(o,'fechaInicio','fechaFin'); },
+    onGuardar:function(o){ if(p){ Object.assign(p,o); } else { o.id=uid('p'); DB.proyectos.push(o); UI.proy=o.id; } guardar(); },
+    onEliminar: p? function(){ borrarProyecto(p.id); } : null
+  });
+}
+function borrarProyecto(id){
+  DB.proyectos = DB.proyectos.filter(function(x){return x.id!==id;});
+  ['fases','tareas','entregables','asignaciones','costos','riesgos','alcance','interesados','comunicaciones'].forEach(function(k){ DB[k]=DB[k].filter(function(x){return x.proyectoId!==id;}); });
+  DB.tareas.forEach(function(t){ if(t.predecesorasIds) t.predecesorasIds = t.predecesorasIds.filter(function(pid){ return !!byId(DB.tareas,pid); }); });
+  if(UI.proy===id) UI.proy='*';
+  guardar();
+}
+function formFase(f){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: f?'Editar fase':'Nueva fase', valores: f||{proyectoId:proyDefecto(), orden:(DB.fases.length+1)},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true,full:true},
+      {k:'nombre',label:'Nombre de la fase',req:true,full:true},
+      {k:'orden',label:'Orden',tipo:'number',min:1},
+      {k:'fechaInicio',label:'Inicio',tipo:'date'},
+      {k:'fechaFin',label:'Fin',tipo:'date'}
+    ],
+    validar:function(o){ return valFechas(o,'fechaInicio','fechaFin'); },
+    onGuardar:function(o){ if(f) Object.assign(f,o); else { o.id=uid('f'); DB.fases.push(o); } guardar(); },
+    onEliminar: f? function(){ DB.fases=DB.fases.filter(function(x){return x.id!==f.id;}); DB.tareas.forEach(function(t){ if(t.faseId===f.id) t.faseId=''; }); guardar(); } : null
+  });
+}
+function ciclo(idTarea, preds){
+  var visto={}; var pila = (preds||[]).slice();
+  while(pila.length){
+    var cur = pila.pop();
+    if(cur===idTarea) return true;
+    if(visto[cur]) continue; visto[cur]=1;
+    var t = byId(DB.tareas,cur);
+    if(t && t.predecesorasIds) pila = pila.concat(t.predecesorasIds);
+  }
+  return false;
+}
+function formTarea(t){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  var pid = t? t.proyectoId : proyDefecto();
+  var candidatas = DB.tareas.filter(function(x){ return x.proyectoId===pid && (!t || x.id!==t.id); }).map(function(x){ return {v:x.id, t:x.nombre}; });
+  abrirForm({ titulo: t?'Editar tarea':'Nueva tarea', valores: t||{proyectoId:pid, estado:'Pendiente', avance:0},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'faseId',label:'Fase',tipo:'selectg',grupos:gruposFases(),vacio:'— Sin fase —'},
+      {k:'nombre',label:'Nombre de la tarea',req:true,full:true},
+      {k:'responsableId',label:'Responsable',tipo:'select',opts:optRecursos(),vacio:'— Sin asignar —'},
+      {k:'estado',label:'Estado',tipo:'select',opts:EST_TAR},
+      {k:'fechaInicio',label:'Inicio',tipo:'date',req:true},
+      {k:'fechaFin',label:'Fin',tipo:'date',req:true},
+      {k:'avance',label:'Avance (%)',tipo:'number',min:0},
+      {k:'esHito',label:'Es un hito (marca una fecha, sin duración)',tipo:'check',full:true},
+      {k:'predecesorasIds',label:'Predecesoras (deben terminar antes)',tipo:'multi',opts:candidatas,full:true}
+    ],
+    validar:function(o){
+      var e = valFechas(o,'fechaInicio','fechaFin'); if(e) return e;
+      if(t && ciclo(t.id, o.predecesorasIds)) return 'Esa dependencia crea un ciclo entre tareas.';
+      return null;
+    },
+    onGuardar:function(o){ if(o.esHito) o.fechaFin=o.fechaInicio; if(t) Object.assign(t,o); else { o.id=uid('t'); DB.tareas.push(o); } guardar(); },
+    onEliminar: t? function(){ DB.tareas=DB.tareas.filter(function(x){return x.id!==t.id;});
+      DB.tareas.forEach(function(x){ if(x.predecesorasIds) x.predecesorasIds=x.predecesorasIds.filter(function(i){return i!==t.id;}); }); guardar(); } : null
+  });
+}
+function formEntregable(e){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: e?'Editar entregable':'Nuevo entregable', valores: e||{proyectoId:proyDefecto(), estado:'Pendiente'},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'responsableId',label:'Responsable',tipo:'select',opts:optRecursos(),vacio:'— Sin asignar —'},
+      {k:'nombre',label:'Entregable',req:true,full:true},
+      {k:'fechaComprometida',label:'Fecha comprometida',tipo:'date',req:true},
+      {k:'estado',label:'Estado',tipo:'select',opts:EST_ENT},
+      {k:'faseId',label:'Fase que lo produce',tipo:'selectg',grupos:gruposFases(),vacio:'— Sin fase asociada —'},
+      {k:'avance',label:'Avance (%)',tipo:'number',min:0},
+      {k:'evidencia',label:'Evidencia — enlace del repositorio',full:true},
+      {k:'descripcion',label:'De qué trata el entregable',tipo:'textarea',full:true},
+      {k:'observaciones',label:'Observaciones / seguimiento',tipo:'textarea',full:true}
+    ],
+    validar:function(o){
+      var v=String(o.evidencia||'').trim();
+      if(v && /^(javascript|data|vbscript):/i.test(v)) return 'Ese enlace no es válido: usa una dirección http o https.';
+      return null;
+    },
+    onGuardar:function(o){ o.evidencia = normalizaURL(o.evidencia);
+      if(e) Object.assign(e,o); else { o.id=uid('e'); DB.entregables.push(o); } guardar(); },
+    onEliminar: e? function(){ DB.entregables=DB.entregables.filter(function(x){return x.id!==e.id;}); guardar(); } : null
+  });
+}
+function formRecurso(r){
+  abrirForm({ titulo: r?'Editar persona':'Nueva persona', valores: r||{},
+    campos:[
+      {k:'nombre',label:'Nombre',req:true,full:true},
+      {k:'rol',label:'Rol'},
+      {k:'area',label:'Área o empresa'},
+      {k:'costoHoraCOP',label:'Costo hora (COP)',tipo:'number',min:0}
+    ],
+    onGuardar:function(o){ if(r) Object.assign(r,o); else { o.id=uid('r'); DB.recursos.push(o); } guardar(); },
+    onEliminar: r? function(){ DB.recursos=DB.recursos.filter(function(x){return x.id!==r.id;});
+      DB.asignaciones=DB.asignaciones.filter(function(x){return x.recursoId!==r.id;});
+      DB.tareas.forEach(function(t){ if(t.responsableId===r.id) t.responsableId=''; });
+      DB.entregables.forEach(function(e){ if(e.responsableId===r.id) e.responsableId=''; });
+      DB.riesgos.forEach(function(x){ if(x.responsableId===r.id) x.responsableId=''; }); guardar(); } : null
+  });
+}
+function formAsignacion(a){
+  if(!DB.recursos.length) return toast('Agrega primero a una persona.');
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: a?'Editar asignación':'Nueva asignación', valores: a||{proyectoId:proyDefecto(), porcentajeAsignacion:50},
+    campos:[
+      {k:'recursoId',label:'Persona',tipo:'select',opts:optRecursos(),req:true},
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'porcentajeAsignacion',label:'% de dedicación',tipo:'number',min:0,req:true},
+      {k:'fechaDesde',label:'Desde',tipo:'date'},
+      {k:'fechaHasta',label:'Hasta',tipo:'date'}
+    ],
+    validar:function(o){ if(o.porcentajeAsignacion>100) return 'La dedicación en un proyecto no puede superar el 100%.'; return valFechas(o,'fechaDesde','fechaHasta'); },
+    onGuardar:function(o){ if(a) Object.assign(a,o); else { o.id=uid('a'); DB.asignaciones.push(o); } guardar(); },
+    onEliminar: a? function(){ DB.asignaciones=DB.asignaciones.filter(function(x){return x.id!==a.id;}); guardar(); } : null
+  });
+}
+function formCosto(c){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: c?'Editar costo':'Nuevo registro de costo', valores: c||{proyectoId:proyDefecto(), estado:'Planeado', tipo:'Personal', fecha:HOY},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'concepto',label:'Concepto',req:true,full:true},
+      {k:'tipo',label:'Tipo',tipo:'select',opts:['Personal','Proveedor','Licencia','Infraestructura','Otro']},
+      {k:'estado',label:'Estado',tipo:'select',opts:['Planeado','Ejecutado']},
+      {k:'montoCOP',label:'Monto (COP)',tipo:'number',min:0,req:true},
+      {k:'fecha',label:'Fecha',tipo:'date',req:true}
+    ],
+    onGuardar:function(o){ if(c) Object.assign(c,o); else { o.id=uid('c'); DB.costos.push(o); } guardar(); },
+    onEliminar: c? function(){ DB.costos=DB.costos.filter(function(x){return x.id!==c.id;}); guardar(); } : null
+  });
+}
+
+function formRiesgo(r){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: r?'Editar riesgo':'Nuevo riesgo', valores: r||{proyectoId:proyDefecto(), estado:'Abierto'},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'categoria',label:'Categoría'},
+      {k:'nombre',label:'Riesgo',req:true,full:true},
+      {k:'probabilidad',label:'Probabilidad',tipo:'select',opts:ESCALA,vacio:'— Sin valorar —'},
+      {k:'impacto',label:'Impacto',tipo:'select',opts:ESCALA,vacio:'— Sin valorar —'},
+      {k:'responsableId',label:'Responsable',tipo:'select',opts:optRecursos(),vacio:'— Sin asignar —'},
+      {k:'estado',label:'Estado',tipo:'select',opts:EST_RIE},
+      {k:'planContingencia',label:'Plan de contingencia',tipo:'textarea',full:true}
+    ],
+    onGuardar:function(o){ if(r) Object.assign(r,o); else { o.id=uid('g'); DB.riesgos.push(o); } guardar(); },
+    onEliminar: r? function(){ DB.riesgos=DB.riesgos.filter(function(x){return x.id!==r.id;}); guardar(); } : null
+  });
+}
+function formAlcance(a, pid){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: a?'Editar dimensión del alcance':'Nueva dimensión del alcance', valores: a||{proyectoId:pid||proyDefecto()},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'dimension',label:'Dimensión',req:true},
+      {k:'alcance',label:'Alcance',full:true},
+      {k:'descripcion',label:'Descripción',tipo:'textarea',full:true}
+    ],
+    onGuardar:function(o){ if(a) Object.assign(a,o); else { o.id=uid('al'); DB.alcance.push(o); } guardar(); },
+    onEliminar: a? function(){ DB.alcance=DB.alcance.filter(function(x){return x.id!==a.id;}); guardar(); } : null
+  });
+}
+
+function formCom(c){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: c?'Editar comunicación':'Nueva comunicación', valores: c||{proyectoId:proyDefecto(), estado:'Activa', frecuencia:'Semanal', fechaInicio:HOY},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'estado',label:'Estado',tipo:'select',opts:EST_COM},
+      {k:'que',label:'Qué se comunica',req:true,full:true},
+      {k:'porQue',label:'Para qué sirve (propósito)',tipo:'textarea',full:true},
+      {k:'destinatarios',label:'Destinatarios',full:true},
+      {k:'canal',label:'Canal / medio',tipo:'select',opts:CANALES,vacio:'— Sin definir —'},
+      {k:'frecuencia',label:'Frecuencia',tipo:'select',opts:FRECUENCIAS},
+      {k:'fechaInicio',label:'Fecha de inicio',tipo:'date',req:true},
+      {k:'formato',label:'Formato / plantilla'},
+      {k:'responsablePrep',label:'Prepara'},
+      {k:'aprueba',label:'Aprueba'},
+      {k:'envia',label:'Envía'},
+      {k:'repositorio',label:'Dónde queda la evidencia',full:true}
+    ],
+    onGuardar:function(o){ if(c) Object.assign(c,o); else { o.id=uid('cm'); DB.comunicaciones.push(o); } guardar(); },
+    onEliminar: c? function(){ DB.comunicaciones=DB.comunicaciones.filter(function(x){return x.id!==c.id;}); guardar(); } : null
+  });
+}
+function formInteresado(i){
+  if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
+  abrirForm({ titulo: i?'Editar interesado':'Nuevo interesado', valores: i||{proyectoId:proyDefecto(), posturaDeseada:'Apoya'},
+    campos:[
+      {k:'proyectoId',label:'Proyecto',tipo:'select',opts:optProyectos(),req:true},
+      {k:'categoria',label:'Categoría',tipo:'select',opts:CAT_INT,vacio:'— Sin clasificar —'},
+      {k:'nombre',label:'Interesado (persona, grupo u organización)',req:true,full:true},
+      {k:'rol',label:'Rol en el proyecto'},
+      {k:'organizacion',label:'Organización o área'},
+      {k:'poder',label:'Poder / influencia',tipo:'select',opts:NIVEL2,vacio:'— Por valorar —'},
+      {k:'interes',label:'Interés',tipo:'select',opts:NIVEL2,vacio:'— Por valorar —'},
+      {k:'posturaActual',label:'Postura actual',tipo:'select',opts:POSTURAS,vacio:'— Por valorar —'},
+      {k:'posturaDeseada',label:'Postura deseada',tipo:'select',opts:POSTURAS,vacio:'— Sin definir —'},
+      {k:'contacto',label:'Contacto',full:true},
+      {k:'necesidades',label:'Qué información necesita',tipo:'textarea',full:true},
+      {k:'estrategia',label:'Cómo lo involucro',tipo:'textarea',full:true}
+    ],
+    onGuardar:function(o){ if(i) Object.assign(i,o); else { o.id=uid('in'); DB.interesados.push(o); } guardar(); },
+    onEliminar: i? function(){ DB.interesados=DB.interesados.filter(function(x){return x.id!==i.id;}); guardar(); } : null
+  });
+}
+/* Plan base derivado del Plan de Comunicaciones aprobado del proyecto Mesa de Ayuda (Odoo 18)
+   y del dominio de interesados y comunicaciones del PMBOK. Es una BASE para validar y ajustar. */
+function cargarPlanComunicaciones(){
+  var pid = proyDefecto();
+  if(!pid) return toast('Crea primero un proyecto.');
+  var p = byId(DB.proyectos,pid);
+  var ini = (p && p.fechaInicio) || HOY;
+  var fin = (p && p.fechaFin) || HOY;
+  var GP='Gerente del Proyecto', LA='Líder de Arquitectura', CA='Comité de Arquitectura';
+  function C(que,porQue,dest,canal,frec,prep,apr,env,f,formato,repo){
+    DB.comunicaciones.push({id:uid('cm'),proyectoId:pid,que:que,porQue:porQue,destinatarios:dest,canal:canal,
+      frecuencia:frec,responsablePrep:prep,aprueba:apr,envia:env,fechaInicio:f,formato:formato||'',repositorio:repo||'',estado:'Activa'});
+  }
+  C('Reunión de kickoff','Dar inicio oficial, alinear objetivo, alcance y reglas de juego.','Todos los interesados','Videollamada (Meet)','Única (inicio)',GP,GP,GP,ini,'Presentación de arranque','Repositorio del proyecto');
+  C('Coordinación diaria del equipo','Desbloquear pendientes y sincronizar el trabajo del día.','Equipo de arquitectura','Chat / Spaces','Diaria','Todos','N/A','Todos',ini,'','Historial del espacio');
+  C('Reunión de seguimiento','Revisar avances, bloqueos y próximos pasos contra el cronograma.','Equipo y líder de arquitectura','Videollamada (Meet)','Semanal',GP,GP,GP,ini,'Acta de reunión','Repositorio del proyecto');
+  C('Informe de avance','Informar estado, avance por artefacto, riesgos y desviaciones.','Patrocinador e interesados clave','Correo electrónico','Semanal',GP,GP,GP,ini,'Informe de seguimiento','Repositorio del proyecto');
+  C('Comité de arquitectura','Presentar y aprobar decisiones arquitectónicas y registrarlas en el ADR.','Comité de arquitectura y patrocinador','Comité formal','Mensual',LA,CA,GP,ini,'Presentación + ADR','Architecture Decision Log');
+  C('Validación de artefacto TOGAF','Verificar que el artefacto cumple los criterios antes de darlo por entregado.','Líder de arquitectura y dueños de proceso','Correo electrónico','Por hito/entregable',LA,CA,LA,ini,'Acta de aceptación','Repositorio arquitectónico');
+  C('Solicitudes de cambio de alcance','Registrar, evaluar y decidir sobre cambios al alcance acordado.','Patrocinador y comité de arquitectura','Reunión presencial','Según necesidad',GP,CA,GP,ini,'Formato de solicitud de cambio','Control de cambios');
+  C('Escalamiento de riesgos e impedimentos','Activar el plan de contingencia y tomar decisiones que el equipo no puede tomar.','Patrocinador','Correo electrónico','Según necesidad',GP,GP,GP,ini,'Nota de escalamiento','Registro de riesgos');
+  C('Tablero de seguimiento','Dar visibilidad permanente del avance, entregables y riesgos.','Todos los interesados','Tablero / Dashboard','Semanal',GP,GP,GP,ini,'Control de Portafolio','Enlace del tablero');
+  C('Reunión de cierre y lecciones aprendidas','Presentar resultados y capitalizar los aprendizajes del ciclo.','Todos los interesados y patrocinador','Videollamada (Meet)','Única (cierre)',GP,GP,GP,fin,'Informe de cierre','Repositorio del proyecto');
+
+  function I(nombre,rol,org,cat,poder,interes,deseada,nec,estr){
+    DB.interesados.push({id:uid('in'),proyectoId:pid,nombre:nombre,rol:rol,organizacion:org,categoria:cat,
+      poder:poder,interes:interes,posturaActual:'',posturaDeseada:deseada,contacto:'',necesidades:nec,estrategia:estr});
+  }
+  I('Patrocinador del proyecto','Autoriza, financia y desbloquea','Dirección','Patrocinio','Alto','Alto','Lidera',
+    'Estado general, decisiones que requieren su autoridad, riesgos altos y desviaciones de alcance o fecha.',
+    'Informe semanal y comité mensual; escalamiento directo cuando se materialice un riesgo alto.');
+  I('Comité de arquitectura','Aprueba decisiones arquitectónicas','Gobernanza TI','Gobernanza','Alto','Alto','Apoya',
+    'Decisiones propuestas, alternativas evaluadas, impacto y ADR resultante.',
+    'Comité mensual con presentación previa; nada se aprueba sin ADR registrado.');
+  I('Líder de arquitectura empresarial','Conduce el trabajo técnico del AS-IS','Equipo ejecutor','Equipo del proyecto','Alto','Alto','Lidera',
+    'Prioridades, disponibilidad del equipo, brechas detectadas y criterios de aceptación de cada artefacto.',
+    'Seguimiento semanal y validación de cada artefacto; define prioridades cuando hay conflicto de asignación.');
+  I('Gerencia de TI','Operación de la plataforma ERP','Cliente','Área técnica','Alto','Bajo','Apoya',
+    'Requerimientos no funcionales, licenciamiento, versionamiento e impacto en la operación.',
+    'Informe de avance y participación puntual en Technology Architecture.');
+  I('Seguridad de la información','Controles, compliance y auditoría','Cliente','Área técnica','Alto','Bajo','Apoya',
+    'Marco de seguridad, controles de acceso, compliance y plan de pruebas de seguridad.',
+    'Involucrar en Security Architecture y en la revisión de integraciones; consultar antes de decisiones que toquen datos.');
+  I('Dueños de proceso ERP','Validan la arquitectura de negocio y procesos','Cliente','Cliente / usuario','Bajo','Alto','Apoya',
+    'Cómo queda documentado su proceso AS-IS y qué brechas se identificaron en su dominio.',
+    'Talleres por dominio funcional y validación del mapeo de procesos; son la fuente de verdad del AS-IS.');
+  I('Equipo de arquitectura y análisis','Elabora los artefactos','Equipo ejecutor','Equipo del proyecto','Bajo','Alto','Lidera',
+    'Alcance de su tarea, criterios de aceptación, dependencias y cambios de prioridad.',
+    'Coordinación diaria y seguimiento semanal; espacio abierto para levantar impedimentos.');
+  I('Proveedor y comunidad Odoo (OCA)','Componentes de terceros y comunitarios','Externo','Proveedor','Bajo','Bajo','Neutral',
+    'Versiones soportadas, ciclo de vida de los módulos y compatibilidad.',
+    'Monitorear; consultar solo cuando una decisión dependa del soporte de un componente.');
+
+  UI.tab='comunicaciones';
+  guardar();
+}
+
+/* ============================ EXPORTAR ============================ */
+function csvCell(v){ v = v==null?'':String(v); return '"'+v.replace(/"/g,'""')+'"'; }
+function csvDoc(cab, filas){ return '﻿'+[cab].concat(filas).map(function(f){ return f.map(csvCell).join(';'); }).join('\r\n'); }
+function armarCSV(k){
+  var ids = idsVisibles();
+  if(k==='portafolio') return csvDoc(['Codigo','Proyecto','Cliente','Gerente','Estado','Inicio','Fin','Avance %','Presupuesto COP','Ejecutado COP','Nota de avance'],
+    proyectosVisibles().map(function(p){ var r=rangoProyecto(p); return [p.codigo,p.nombre,p.cliente,p.gerente,p.estado,fdate(r.ini),fdate(r.fin),pct(p.avanceManual),Number(p.presupuestoCOP)||0,costoEjecutado(p.id),p.notaAvance]; }));
+  if(k==='tareas') return csvDoc(['Proyecto','Fase','Tarea','Hito','Responsable','Inicio','Fin','Dias','Avance %','Estado','Predecesoras'],
+    DB.tareas.filter(function(t){return ids.indexOf(t.proyectoId)>=0;}).map(function(t){ var f=byId(DB.fases,t.faseId);
+      return [codProy(t.proyectoId), f?f.nombre:'', t.nombre, t.esHito?'Si':'No', nombreRec(t.responsableId), fdate(t.fechaInicio), fdate(t.fechaFin),
+        (t.fechaInicio&&t.fechaFin)?(diasEntre(t.fechaInicio,t.fechaFin)+1):'', pct(t.avance), t.estado||'Pendiente',
+        (t.predecesorasIds||[]).map(function(i){var x=byId(DB.tareas,i);return x?x.nombre:'';}).join(' | ')]; }));
+  if(k==='entregables') return csvDoc(['Proyecto','Entregable','De que trata','Fase','Responsable','Fecha comprometida','Avance %','Avance calculado tareas','Estado','Evidencia','Observaciones'],
+    DB.entregables.filter(function(e){return ids.indexOf(e.proyectoId)>=0;}).map(function(e){ var f=byId(DB.fases,e.faseId), c=avanceCalcEntregable(e);
+      return [codProy(e.proyectoId),e.nombre,e.descripcion,f?f.nombre:'',nombreRec(e.responsableId),fdate(e.fechaComprometida),pct(e.avance),c?c.v:'',e.estado||'Pendiente',e.evidencia,e.observaciones]; }));
+  if(k==='recursos') return csvDoc(['Persona','Rol','Area','Costo hora COP','Proyecto','% Dedicacion','Desde','Hasta'],
+    DB.asignaciones.filter(function(a){return ids.indexOf(a.proyectoId)>=0;}).map(function(a){ var r=byId(DB.recursos,a.recursoId)||{};
+      return [r.nombre,r.rol,r.area,Number(r.costoHoraCOP)||0,codProy(a.proyectoId),Number(a.porcentajeAsignacion)||0,fdate(a.fechaDesde),fdate(a.fechaHasta)]; }));
+  if(k==='comunicaciones') return csvDoc(['Proyecto','Que se comunica','Proposito','Destinatarios','Canal','Frecuencia','Fecha inicio','Proxima','Prepara','Aprueba','Envia','Formato','Evidencia','Estado'],
+    DB.comunicaciones.filter(function(c){return ids.indexOf(c.proyectoId)>=0;}).map(function(c){ var pr=proximaCom(c);
+      return [codProy(c.proyectoId),c.que,c.porQue,c.destinatarios,c.canal,c.frecuencia,fdate(c.fechaInicio),
+        (pr&&pr.fecha)?fdate(pr.fecha):(pr&&pr.evento?'Por evento':''),c.responsablePrep,c.aprueba,c.envia,c.formato,c.repositorio,c.estado||'Activa']; }));
+  if(k==='interesados') return csvDoc(['Proyecto','Interesado','Rol','Organizacion','Categoria','Poder','Interes','Estrategia base','Postura actual','Postura deseada','Brecha','Necesita saber','Como lo involucro','Contacto'],
+    DB.interesados.filter(function(i){return ids.indexOf(i.proyectoId)>=0;}).map(function(i){ var q=cuadrante(i), b=brechaInvolucramiento(i);
+      return [codProy(i.proyectoId),i.nombre,i.rol,i.organizacion,i.categoria,i.poder,i.interes,q?q.t:'',i.posturaActual,i.posturaDeseada,
+        b===null?'':String(b),i.necesidades,i.estrategia,i.contacto]; }));
+  if(k==='riesgos') return csvDoc(['Proyecto','Riesgo','Categoria','Probabilidad','Impacto','Nivel','Plan de contingencia','Responsable','Estado'],
+    DB.riesgos.filter(function(r){return ids.indexOf(r.proyectoId)>=0;}).map(function(r){ return [codProy(r.proyectoId),r.nombre,r.categoria,r.probabilidad,r.impacto,nivelRiesgo(r).t,r.planContingencia,nombreRec(r.responsableId),r.estado||'Abierto']; }));
+  if(k==='costos') return csvDoc(['Proyecto','Fecha','Concepto','Tipo','Estado','Monto COP'],
+    DB.costos.filter(function(c){return ids.indexOf(c.proyectoId)>=0;}).map(function(c){ return [codProy(c.proyectoId),fdate(c.fecha),c.concepto,c.tipo,c.estado,Number(c.montoCOP)||0]; }));
+  return '';
+}
+function exportar(k){
+  var data = armarCSV(k);
+  if(!downloadsNS){ toast('Las descargas no están disponibles en esta vista.', 4000); return; }
+  var base = 'portafolio-'+k+'-'+HOY;
+  downloadsNS.save({filename: base+'.csv', data: data})
+    .then(function(){ toast('Archivo entregado al navegador.'); })
+    ['catch'](function(err){
+      var c = err && err.code;
+      if(c==='extension_not_enabled'||c==='rejected_extension'){
+        downloadsNS.save({filename: base+'.txt', data: data})
+          .then(function(){ toast('Descargado como .txt — renómbralo a .csv para abrirlo en Excel.', 5000); })
+          ['catch'](function(e2){ if(e2&&e2.code!=='declined') toast('No se pudo descargar el archivo.', 4000); });
+        return;
+      }
+      if(c==='declined') return;
+      if(c==='rate_limited'){ toast('Espera un momento antes de descargar otro archivo.', 4000); return; }
+      toast('No se pudo descargar el archivo.', 4000);
+    });
+}
+
+/* ============================ INFORME EJECUTIVO EN PDF ============================ */
+/* window.print() no responde cuando el tablero corre embebido en un marco restringido,
+   así que el informe se arma como PDF y se entrega por la capacidad de descargas. */
+var jsPDFready = null;
+function cargarJsPDF(){
+  if(jsPDFready) return jsPDFready;
+  jsPDFready = new Promise(function(res, rej){
+    if(window.jspdf && window.jspdf.jsPDF) return res(window.jspdf.jsPDF);
+    var sc = document.createElement('script');
+    sc.src = window.__JSPDF_SRC__ || 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    sc.onload = function(){ (window.jspdf && window.jspdf.jsPDF) ? res(window.jspdf.jsPDF) : rej(new Error('lib')); };
+    sc.onerror = function(){ jsPDFready = null; rej(new Error('red')); };
+    document.head.appendChild(sc);
+  });
+  return jsPDFready;
+}
+/* Las fuentes estándar de PDF sólo cubren Latin-1: se normaliza lo que no entra. */
+function pdfTxt(v){
+  return String(v==null?'':v)
+    .replace(/[\u2192\u2190\u2014\u2013\u2012\u2011]/g,'-')
+    .replace(/[\u2191\u2193]/g,'')
+    .replace(/[\u25c6\u25c7\u25cf\u2022]/g,'*')
+    .replace(/\u2713/g,'OK')
+    .replace(/[\u2018\u2019]/g,"'").replace(/[\u201c\u201d]/g,'"')
+    .replace(/[\u00a0\u202f\u2028\u2029]/g,' ')
+    .replace(/\u2026/g,'...')
+    .replace(/[^\x00-\xff]/g,'');
+}
+function generarPDF(){
+  if(!downloadsNS){ toast('Las descargas no están disponibles en esta vista. Abre el tablero en su propia pestaña e imprime desde el navegador.', 6000); return; }
+  toast('Armando el informe…');
+  cargarJsPDF().then(function(jsPDF){
+    var doc = new jsPDF({unit:'mm', format:'a4'});
+    var M=14, W=210, y=0, pag=1;
+    var G={ink:[22,25,38], mid:[90,97,115], soft:[140,146,163], line:[205,210,222], band:[241,243,248]};
+    function setC(c){ doc.setTextColor(c[0],c[1],c[2]); }
+    function pie(){
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); setC(G.soft);
+      doc.text(pdfTxt('Control de Portafolio · generado el '+fdateL(HOY)), M, 288);
+      doc.text('Pág. '+pag, W-M, 288, {align:'right'});
+    }
+    function nueva(){ pie(); doc.addPage(); pag++; y=M+4; }
+    function espacio(h){ if(y+h > 278){ nueva(); } }
+    function h2(t){
+      espacio(14); y+=4;
+      doc.setFont('helvetica','bold'); doc.setFontSize(10.5); setC(G.ink);
+      doc.text(pdfTxt(t), M, y); y+=2.2;
+      doc.setDrawColor(G.ink[0],G.ink[1],G.ink[2]); doc.setLineWidth(.5);
+      doc.line(M, y, W-M, y); y+=5.5;
+    }
+    function parrafo(t, size){
+      doc.setFont('helvetica','normal'); doc.setFontSize(size||8.6); setC(G.mid);
+      var ls = doc.splitTextToSize(pdfTxt(t), W-2*M);
+      ls.forEach(function(l){ espacio(5); doc.text(l, M, y); y+=4.1; });
+      y+=1.5;
+    }
+    /* tabla: cols=[{t,w,a}] filas=[[celda,...]] */
+    function tabla(cols, filas){
+      var xs=[], acc=M; cols.forEach(function(c){ xs.push(acc); acc+=c.w; });
+      function cabecera(){
+        espacio(10);
+        doc.setFillColor(G.band[0],G.band[1],G.band[2]);
+        doc.rect(M, y-3.6, W-2*M, 6.4, 'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(7); setC(G.mid);
+        cols.forEach(function(c,i){
+          var x = c.a==='r'? xs[i]+c.w-1.5 : xs[i]+1.5;
+          doc.text(pdfTxt(c.t.toUpperCase()), x, y, {align: c.a==='r'?'right':'left'});
+        });
+        y+=4.4;
+      }
+      cabecera();
+      filas.forEach(function(f){
+        var partes = cols.map(function(c,i){
+          doc.setFont('helvetica', c.b?'bold':'normal'); doc.setFontSize(8.2);
+          return doc.splitTextToSize(pdfTxt(f[i]), c.w-3);
+        });
+        var alto = Math.max.apply(null, partes.map(function(pp){return pp.length;}))*3.9 + 3.2;
+        if(y+alto > 278){ nueva(); cabecera(); }
+        cols.forEach(function(c,i){
+          doc.setFont('helvetica', c.b?'bold':'normal'); doc.setFontSize(8.2);
+          setC(c.b? G.ink : G.mid);
+          var x = c.a==='r'? xs[i]+c.w-1.5 : xs[i]+1.5;
+          partes[i].forEach(function(l,k){ doc.text(l, x, y+2.6+k*3.9, {align: c.a==='r'?'right':'left'}); });
+        });
+        y+=alto;
+        doc.setDrawColor(G.line[0],G.line[1],G.line[2]); doc.setLineWidth(.2);
+        doc.line(M, y-1.4, W-M, y-1.4);
+      });
+      y+=2;
+    }
+
+    /* ---------- portada / encabezado ---------- */
+    var ps = proyectosVisibles(), ids = idsVisibles();
+    y = M+6;
+    doc.setFont('helvetica','bold'); doc.setFontSize(17); setC(G.ink);
+    doc.text('Informe ejecutivo de portafolio', M, y); y+=6.5;
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); setC(G.soft);
+    doc.text(pdfTxt('Corte al '+fdateL(HOY)+(UI.proy!=='*'? '  ·  '+nombreProy(UI.proy) : '  ·  '+ps.length+' proyecto'+(ps.length===1?'':'s'))), M, y); y+=4;
+    doc.setDrawColor(G.ink[0],G.ink[1],G.ink[2]); doc.setLineWidth(.8); doc.line(M, y, W-M, y); y+=8;
+
+    /* ---------- KPIs ---------- */
+    var presu=0, ejec=0, sumAv=0, pesos=0;
+    ps.forEach(function(p){ presu += Number(p.presupuestoCOP)||0; ejec += costoEjecutado(p.id);
+      var w=(Number(p.presupuestoCOP)||0)||1; if(p.estado!=='Cerrado'){ sumAv+=pct(p.avanceManual)*w; pesos+=w; } });
+    var avgAv = pesos? Math.round(sumAv/pesos) : 0;
+    var ents = DB.entregables.filter(function(e){ return ids.indexOf(e.proyectoId)>=0; });
+    var prox30 = ents.filter(function(e){ var d=diasEntre(HOY,e.fechaComprometida); return entAbierto(e)&&d!=null&&d>=0&&d<=30; });
+    var riesgosAb = DB.riesgos.filter(function(r){ return ids.indexOf(r.proyectoId)>=0 && r.estado!=='Cerrado' && r.estado!=='Mitigado'; });
+    var K = [
+      ['Proyectos activos', String(ps.filter(function(p){return p.estado!=='Cerrado';}).length)],
+      ['Avance promedio', avgAv+'%'],
+      ['Entregables a 30 días', String(prox30.length)],
+      ['Riesgos abiertos', String(riesgosAb.length)]
+    ];
+    var kw=(W-2*M-3*3)/4;
+    K.forEach(function(k,i){
+      var x=M+i*(kw+3);
+      doc.setFillColor(G.band[0],G.band[1],G.band[2]); doc.rect(x, y, kw, 16, 'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(6.6); setC(G.soft);
+      doc.text(pdfTxt(k[0].toUpperCase()), x+2.5, y+5);
+      doc.setFont('helvetica','bold'); doc.setFontSize(14); setC(G.ink);
+      doc.text(pdfTxt(k[1]), x+2.5, y+13);
+    });
+    y+=22;
+
+    /* ---------- portafolio ---------- */
+    h2('Portafolio');
+    if(ps.length){
+      tabla([{t:'Proyecto',w:58,b:true},{t:'Estado',w:24},{t:'Avance',w:16,a:'r'},{t:'Ventana',w:38},{t:'Presupuesto',w:22,a:'r'},{t:'Ejecutado',w:24,a:'r'}],
+        ps.map(function(p){ var r=rangoProyecto(p), pre=Number(p.presupuestoCOP)||0, eje=costoEjecutado(p.id);
+          var etq = p.nombre;
+          if(p.codigo && p.nombre.toUpperCase().indexOf(p.codigo.toUpperCase())<0) etq = p.codigo+' - '+p.nombre;
+          return [ etq, p.estado||'Planeado', pct(p.avanceManual)+'%',
+                   fdate(r.ini)+' a '+fdate(r.fin), pre?moneyK(pre):'-', eje?moneyK(eje):'-' ]; }));
+    } else parrafo('Sin proyectos en el filtro actual.');
+
+    /* ---------- entregables ---------- */
+    var fs2=finSemana(), fm2=finMes();
+    var abiertas = ents.filter(function(e){ return entAbierto(e) && e.fechaComprometida; });
+    var sem = sortBy(abiertas.filter(function(e){ return e.fechaComprometida<=fs2; }), function(e){return e.fechaComprometida;});
+    var mes = sortBy(abiertas.filter(function(e){ return e.fechaComprometida>fs2 && e.fechaComprometida<=fm2; }), function(e){return e.fechaComprometida;});
+    h2('Entregas comprometidas');
+    parrafo('Esta semana, hasta el '+fdate(fs2)+': '+(sem.length?sem.length+' entregable'+(sem.length===1?'':'s'):'nada comprometido')
+      +'.  Resto del mes, hasta el '+fdate(fm2)+': '+(mes.length?mes.length+' entregable'+(mes.length===1?'':'s'):'nada comprometido')+'.');
+    var listaEnt = sem.concat(mes);
+    if(listaEnt.length){
+      tabla([{t:'Fecha',w:20},{t:'Entregable',w:66,b:true},{t:'Proyecto',w:24},{t:'Responsable',w:30},{t:'Avance',w:14,a:'r'},{t:'Estado',w:28}],
+        listaEnt.map(function(e){ return [fdate(e.fechaComprometida), e.nombre, codProy(e.proyectoId),
+          nombreRec(e.responsableId), pct(e.avance)+'%', e.estado||'Pendiente']; }));
+    }
+
+    /* ---------- avance por entregable del proyecto único ---------- */
+    if(UI.proy!=='*' && ents.length){
+      h2('Avance por entregable');
+      tabla([{t:'Entregable',w:70,b:true},{t:'Fecha',w:22},{t:'Avance',w:16,a:'r'},{t:'Estado',w:28},{t:'Evidencia',w:46}],
+        sortBy(ents,function(e){return e.fechaComprometida||'9999';}).map(function(e){
+          return [e.nombre, fdate(e.fechaComprometida), pct(e.avance)+'%', e.estado||'Pendiente',
+                  (e.evidencia||'').replace(/^https?:\/\//i,'') || '-']; }));
+    }
+
+    /* ---------- riesgos ---------- */
+    h2('Riesgos abiertos');
+    if(riesgosAb.length){
+      tabla([{t:'Riesgo',w:52,b:true},{t:'Nivel',w:18},{t:'Plan de contingencia',w:66},{t:'Responsable',w:26},{t:'Estado',w:20}],
+        riesgosAb.slice().sort(function(a,b){return nivelRiesgo(b).v-nivelRiesgo(a).v;}).map(function(r){
+          return [r.nombre, nivelRiesgo(r).t, r.planContingencia||'-', nombreRec(r.responsableId), r.estado||'Abierto']; }));
+    } else parrafo('Sin riesgos abiertos registrados.');
+
+    /* ---------- objetivo del proyecto único ---------- */
+    if(UI.proy!=='*'){
+      var pp = byId(DB.proyectos, UI.proy);
+      if(pp && (pp.descripcion||pp.notaAvance)){
+        h2('Objetivo y nota de avance');
+        if(pp.descripcion) parrafo(pp.descripcion);
+        if(pp.notaAvance) parrafo('Nota de avance: '+pp.notaAvance);
+      }
+    }
+    pie();
+
+    var nombre = 'informe-ejecutivo-'+(UI.proy!=='*'? (codProy(UI.proy).replace(/[^\w-]+/g,'-')+'-') : '')+HOY;
+    var buf = doc.output('arraybuffer');
+    return downloadsNS.save({filename: nombre+'.pdf', data: buf})
+      .then(function(){ toast('Informe entregado.'); })
+      ['catch'](function(err){
+        var c = err && err.code;
+        if(c==='declined') return;
+        if(c==='extension_not_enabled'||c==='rejected_extension'){
+          toast('Este visor no permite descargar PDF. Abre el tablero en su propia pestaña e imprime desde el navegador.', 7000); return;
+        }
+        if(c==='too_large'){ toast('El informe quedó demasiado grande. Filtra por un solo proyecto y vuelve a intentarlo.', 6000); return; }
+        if(c==='rate_limited'){ toast('Espera unos segundos antes de generar otro archivo.', 5000); return; }
+        toast('No se pudo entregar el informe.', 5000);
+      });
+  })['catch'](function(err){
+    if(err && err.message==='red') toast('No se pudo cargar el generador de PDF (sin conexión al CDN). Abre el tablero en su propia pestaña e imprime desde el navegador.', 7000);
+    else toast('No se pudo generar el informe.', 5000);
+  });
+}
+
+/* ============================ ESTRUCTURA DE DEMOSTRACIÓN ============================ */
+/* Portafolio ficticio, solo para conocer la herramienta con datos dentro.
+   Las fechas se calculan alrededor del día de carga para que el Gantt se vea vivo. */
+function cargarEjemplo(){
+  var R = function(n,rol,area,ch){ var o={id:uid('r'),nombre:n,rol:rol,area:area,costoHoraCOP:ch}; DB.recursos.push(o); return o.id; };
+  var gp  = R('Gerente de proyecto','Gerencia','Interno',95000);
+  var lf  = R('Líder funcional','Análisis','Interno',85000);
+  var dev1= R('Desarrollador senior','Desarrollo','Interno',78000);
+  var ops = R('Ingeniero de infraestructura','DevOps','Interno',82000);
+  var qa  = R('Analista de calidad','QA','Interno',65000);
+
+  function P(o){ o.id=uid('p'); DB.proyectos.push(o); return o.id; }
+  function F(pid,nombre,orden,ini,fin){ var o={id:uid('f'),proyectoId:pid,nombre:nombre,orden:orden,fechaInicio:ini,fechaFin:fin}; DB.fases.push(o); return o.id; }
+  function T(pid,fid,nombre,resp,ini,fin,av,est,preds,hito){ var o={id:uid('t'),proyectoId:pid,faseId:fid,nombre:nombre,responsableId:resp,fechaInicio:ini,fechaFin:hito?ini:fin,avance:av,estado:est,predecesorasIds:preds||[],esHito:!!hito}; DB.tareas.push(o); return o.id; }
+  function E(pid,fid,nombre,resp,fecha,est,desc){ DB.entregables.push({id:uid('e'),proyectoId:pid,faseId:fid,nombre:nombre,responsableId:resp,
+    fechaComprometida:fecha,estado:est,avance:0,descripcion:desc||'',evidencia:'',observaciones:''}); }
+  function A(rid,pid,p){ DB.asignaciones.push({id:uid('a'),recursoId:rid,proyectoId:pid,porcentajeAsignacion:p,fechaDesde:'',fechaHasta:''}); }
+  function C(pid,concepto,tipo,monto,fecha,est){ DB.costos.push({id:uid('c'),proyectoId:pid,concepto:concepto,tipo:tipo,montoCOP:monto,fecha:fecha,estado:est}); }
+  function G(pid,nombre,cat,prob,imp,plan){ DB.riesgos.push({id:uid('g'),proyectoId:pid,nombre:nombre,categoria:cat,probabilidad:prob,impacto:imp,responsableId:'',estado:'Abierto',planContingencia:plan}); }
+  var d = function(n){ return addD(HOY,n); };
+
+  /* --- Proyecto de ejemplo A --- */
+  var p1 = P({nombre:'Portal de autoservicio', codigo:'DEMO-01', cliente:'Cliente de ejemplo',
+    gerente:'Gerente de proyecto', estado:'En curso', fechaInicio:d(-60), fechaFin:d(75), avanceManual:55,
+    notaAvance:'Datos de demostración. Reemplázalos por tu portafolio real.',
+    presupuestoCOP:420000000, descripcion:'Proyecto ficticio para conocer el tablero: fases, dependencias, entregables y costos.'});
+  var f11 = F(p1,'Requerimientos',1,d(-60),d(-30));
+  var f12 = F(p1,'Desarrollo',2,d(-35),d(45));
+  var f13 = F(p1,'Despliegue',3,d(-20),d(55));
+  var f14 = F(p1,'Estabilización',4,d(-10),d(75));
+  var t1 = T(p1,f11,'Levantamiento de requerimientos',lf,d(-58),d(-40),100,'Completada');
+  var t2 = T(p1,f11,'Definición técnica de la solución',dev1,d(-45),d(-32),100,'Completada');
+  var t3 = T(p1,f12,'Módulo de pagos',dev1,d(-35),d(-16),100,'Completada',[t1]);
+  var t4 = T(p1,f13,'Configuración de red y certificados',ops,d(-14),d(-10),100,'Completada',[t3]);
+  var t5 = T(p1,f13,'Ventana de cambio: paso a producción',ops,d(-8),d(-8),100,'Completada',[t4],true);
+  var t6 = T(p1,f12,'Despliegue del micrositio',ops,d(-6),d(2),80,'En curso',[t2]);
+  var t7 = T(p1,f12,'Cotizador en línea',dev1,d(3),d(45),10,'En curso',[t6]);
+  var t8 = T(p1,f12,'Accesibilidad del portal',dev1,d(-4),d(25),35,'En curso',[t1]);
+  var t10= T(p1,f13,'Ventana de cambio: salida del cotizador',ops,d(52),d(52),0,'Pendiente',[t7],true);
+  T(p1,f14,'Pruebas de humo y monitoreo',qa,d(53),d(60),0,'Pendiente',[t10]);
+  E(p1,f11,'Documento de requerimientos',lf,d(-38),'Aprobado','Alcance funcional acordado con el cliente.');
+  E(p1,f12,'Cotizador en producción',dev1,d(52),'Pendiente','Hito comercial del trimestre.');
+  E(p1,f13,'Informe de la ventana de cambio',ops,d(5),'Entregado','Bitácora del despliegue y plan de reversión.');
+  A(gp,p1,30); A(lf,p1,40); A(dev1,p1,80); A(ops,p1,50); A(qa,p1,40);
+  C(p1,'Equipo de desarrollo — mes en curso','Personal',48000000,d(-5),'Ejecutado');
+  C(p1,'Equipo de desarrollo — mes anterior','Personal',46000000,d(-35),'Ejecutado');
+  C(p1,'Licencias','Licencia',9800000,d(-20),'Ejecutado');
+  C(p1,'Infraestructura en nube','Infraestructura',6200000,d(1),'Planeado');
+  G(p1,'Disponibilidad del ambiente de pruebas','Infraestructura','Media','Alto','Ambiente alterno y ventana de contingencia acordada.');
+
+  /* --- Proyecto de ejemplo B --- */
+  var p2 = P({nombre:'Plan de continuidad del ERP', codigo:'DEMO-02', cliente:'Cliente de ejemplo',
+    gerente:'Gerente de proyecto', estado:'En riesgo', fechaInicio:d(-40), fechaFin:d(60), avanceManual:35,
+    notaAvance:'Datos de demostración. La ventana de pruebas depende de disponibilidad del cliente.',
+    presupuestoCOP:180000000, descripcion:'Proyecto ficticio con una fase bloqueada, para ver los semáforos y las alertas.'});
+  var f21 = F(p2,'Levantamiento',1,d(-40),d(-15));
+  var f22 = F(p2,'Documentación',2,d(-14),d(20));
+  var f23 = F(p2,'Pruebas',3,d(21),d(60));
+  var t21 = T(p2,f21,'Alineación del alcance',lf,d(-40),d(-28),100,'Completada');
+  var t23 = T(p2,f22,'Redacción del plan',lf,d(-14),d(12),60,'En curso',[t21]);
+  T(p2,f22,'Matriz de procesos críticos',lf,d(-8),d(18),40,'En curso',[t21]);
+  T(p2,f22,'Definición de RTO y RPO',ops,d(-3),d(9),25,'Bloqueada',[t21]);
+  var t26 = T(p2,f23,'Simulacro de recuperación',ops,d(24),d(24),0,'Pendiente',[t23],true);
+  T(p2,f23,'Informe de resultados',qa,d(25),d(45),0,'Pendiente',[t26]);
+  E(p2,f22,'Plan de continuidad del negocio',lf,d(12),'En curso','Versión 1 en revisión interna.');
+  E(p2,f23,'Informe de pruebas de continuidad',qa,d(45),'Pendiente','Resultados del simulacro y acciones correctivas.');
+  A(gp,p2,25); A(lf,p2,40); A(dev1,p2,20); A(ops,p2,25); A(qa,p2,30);
+  C(p2,'Equipo funcional — mes en curso','Personal',19500000,d(-5),'Ejecutado');
+  C(p2,'Consultoría externa','Proveedor',24000000,d(20),'Planeado');
+  G(p2,'Disponibilidad de los interesados','Stakeholders','Alta','Alto','Plan de comunicación y comité de escalamiento.');
+
+  /* el avance de cada entregable se deja cuadrado con el promedio de las tareas de su fase */
+  DB.entregables.forEach(function(e){ var c=avanceCalcEntregable(e); if(c) e.avance=c.v; });
+
+  UI.tab='resumen'; UI.proy='*';
+  guardar();
+}
+
+/* ============================ EVENTOS ============================ */
+document.addEventListener('click', function(ev){
+  var tab = ev.target.closest('[data-tab]');
+  if(tab){ UI.tab = tab.getAttribute('data-tab'); saveUI(); render(); window.scrollTo(0,0); return; }
+  var b = ev.target.closest('[data-act]');
+  if(!b || b.closest('.ovl')) return;
+  var act = b.getAttribute('data-act'), id = b.getAttribute('data-id');
+  switch(act){
+    case 'imprimir':
+      try{ window.print(); }catch(e){ toast('El navegador no permitió abrir el diálogo de impresión. Usa Descargar PDF.', 6000); }
+      break;
+    case 'pdf': generarPDF(); break;
+    case 'export': exportar(b.getAttribute('data-k')); break;
+    case 'nuevo-proyecto': formProyecto(null); break;
+    case 'edit-proyecto': formProyecto(byId(DB.proyectos,id)); break;
+    case 'del-proyecto': if(confirm('Se eliminará el proyecto y todo lo asociado (fases, tareas, entregables, asignaciones y costos). ¿Continuar?')) borrarProyecto(id); break;
+    case 'nueva-fase': formFase(null); break;
+    case 'nueva-tarea': formTarea(null); break;
+    case 'edit-tarea': formTarea(byId(DB.tareas,id)); break;
+    case 'nuevo-entregable': formEntregable(null); break;
+    case 'ajustar-avances': {
+      var n=0;
+      DB.entregables.forEach(function(e){ var c=desajusteEntregable(e); if(c){ e.avance=c.v; n++; } });
+      if(n){ guardar(); toast('Se ajustó el avance de '+n+' entregable'+(n===1?'':'s')+'.'); }
+      break; }
+    case 'edit-entregable': formEntregable(byId(DB.entregables,id)); break;
+    case 'nuevo-recurso': formRecurso(null); break;
+    case 'edit-recurso': formRecurso(byId(DB.recursos,id)); break;
+    case 'nueva-asignacion': formAsignacion(null); break;
+    case 'nuevo-costo': formCosto(null); break;
+    case 'nuevo-riesgo': formRiesgo(null); break;
+    case 'edit-riesgo': formRiesgo(byId(DB.riesgos,id)); break;
+    case 'nuevo-alcance': formAlcance(null, id); break;
+    case 'nueva-com': formCom(null); break;
+    case 'edit-com': formCom(byId(DB.comunicaciones,id)); break;
+    case 'nuevo-interesado': formInteresado(null); break;
+    case 'edit-interesado': formInteresado(byId(DB.interesados,id)); break;
+    case 'plan-base':
+      if(DB.comunicaciones.length && !confirm('Ya hay comunicaciones registradas. El plan base se agregará junto a lo existente. ¿Continuar?')) break;
+      cargarPlanComunicaciones(); break;
+    case 'edit-alcance': formAlcance(byId(DB.alcance,id)); break;
+    case 'edit-costo': formCosto(byId(DB.costos,id)); break;
+    case 'ejemplo':
+      if(DB.proyectos.length && !confirm('Ya hay proyectos cargados. La estructura de referencia se agregará junto a lo existente. ¿Continuar?')) break;
+      cargarEjemplo(); break;
+    case 'borrar-todo':
+      if(confirm('Se borrará TODO el contenido del tablero de forma permanente. ¿Continuar?')){
+        DB = {v:3,proyectos:[],fases:[],tareas:[],entregables:[],recursos:[],asignaciones:[],costos:[],riesgos:[],alcance:[],interesados:[],comunicaciones:[]};
+        UI.proy='*'; guardar();
+      } break;
+  }
+});
+document.addEventListener('change', function(ev){
+  var el = ev.target.closest('[data-ui]');
+  if(!el || el.closest('.ovl')) return;
+  UI[el.getAttribute('data-ui')] = el.value;
+  saveUI(); render();
+});
+
+/* ============================ RENDER ============================ */
+function vistaActual(){
+  switch(UI.tab){
+    case 'cronograma': return vistaCronograma();
+    case 'entregables': return vistaEntregables();
+    case 'tareas': return vistaTareas();
+    case 'riesgos': return vistaRiesgos();
+    case 'comunicaciones': return vistaComunicaciones();
+    case 'ficha': return vistaFicha();
+    case 'recursos': return vistaRecursos();
+    case 'datos': return vistaDatos();
+    default: return vistaResumen();
+  }
+}
+function render(){
+  var sx = window.scrollX, sy = window.scrollY;
+  root.innerHTML = shell(vistaActual());
+  root.removeAttribute('aria-busy');
+  var gr = root.querySelector('.g-right[data-hoy]');
+  if(gr){ gr.scrollLeft = Math.max(0, Number(gr.getAttribute('data-hoy')) - gr.clientWidth*0.32); }
+  window.scrollTo(sx, sy);
+}
+
+/* ============================ ARRANQUE ============================ */
+render();
+if(window.claude && typeof window.claude.use==='function'){
+  window.claude.use('artifact').then(function(ns){
+    artifactNS = ns;
+    if(!ns){ readOnly = true; render(); }
+  })['catch'](function(){ readOnly = true; render(); });
+  window.claude.use('downloads').then(function(ns){ downloadsNS = ns; })['catch'](function(){});
+} else {
+  readOnly = true; render();
+}
+})();
+</script>

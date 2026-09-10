@@ -1,0 +1,19 @@
+# Datos reales del portafolio: nunca se versionan
+data/private/
+data/local.json
+
+# Salidas de build y de ejecución
+dist/
+downloads/
+tests/.artifacts/
+
+# Dependencias
+node_modules/
+package-lock.json
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

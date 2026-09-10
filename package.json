@@ -1,0 +1,25 @@
+{
+  "name": "control-portafolio",
+  "version": "1.0.0",
+  "description": "Tablero de gerencia de proyectos: cronograma Gantt con dependencias, entregables, tareas, riesgos, comunicaciones e interesados, recursos y presupuesto. Una sola pagina HTML autocontenida que se publica como Artifact de Claude y guarda sus propios datos.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "author": "Steven Donneys Robledo",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:demo": "node scripts/build.mjs --data data/demo.json",
+    "serve": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:smoke": "node --test tests/smoke.test.mjs",
+    "test:pdf": "node --test tests/pdf.test.mjs"
+  },
+  "devDependencies": {
+    "jspdf": "^2.5.1",
+    "playwright": "^1.47.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

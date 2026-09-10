@@ -1,0 +1,13 @@
+# Lista privada de terminos que no deben aparecer en src/dashboard.html
+#
+# Copiala a  data/private/deny-list.txt  (esa ruta esta en .gitignore) y pon ahi
+# los nombres reales de clientes, personas, sistemas y dominios de tu portafolio.
+# `npm run check` falla si alguno aparece en la plantilla.
+#
+# Una linea por termino. Se comparan sin distinguir mayusculas y como texto literal.
+# Este archivo de ejemplo SI se versiona; el de data/private/ nunca.
+
+Nombre del Cliente S.A.
+Nombre de tu Empresa
+nombre.apellido
+sistema-interno
