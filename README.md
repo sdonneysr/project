@@ -16,12 +16,13 @@ comunicaciones en una sola vista, en vez de repartidos entre un Excel, un Word y
 | **Entregables** | Descripción, fase que lo produce, avance validado contra sus tareas, estado, fecha comprometida y enlace de evidencia. |
 | **Tareas** | Fase, responsable, fechas, duración, avance, estado y predecesoras, con alerta de traslape. |
 | **Riesgos** | Probabilidad × impacto → nivel calculado, plan de contingencia, responsable y estado. |
+| **Bitácora** | Cada cambio de porcentaje en una tarea queda registrado con la fecha capturada automáticamente y una nota, agrupado semana a semana. |
 | **Comunicaciones** | Matriz de comunicaciones que **calcula la próxima ocurrencia**, mapa de interesados poder × interés, registro de interesados y matriz de evaluación del involucramiento. |
 | **Recursos y costos** | Matriz persona × proyecto con alerta de sobreasignación, presupuesto vs. ejecutado y detalle de costos. |
 | **Ficha del proyecto** | Objetivo, nota de avance y alcance por dimensión, con lo que queda fuera resaltado. |
 | **Datos** | Altas y bajas, exportación CSV de las ocho colecciones, carga del portafolio de demostración y vaciado. |
 
-Además: informe ejecutivo en **PDF real** (texto seleccionable, no una captura), exportación **CSV**
+Además: informe ejecutivo en **PDF real** (texto seleccionable, no una captura), exportación **CSV** de nueve colecciones,
 compatible con Excel en español, y tema claro y oscuro según la preferencia de quien lo abre.
 
 ## Cómo se ejecuta
@@ -32,7 +33,7 @@ npm run build        # dist/dashboard.html (para publicar) y dist/standalone.htm
 npm run build:demo   # lo mismo, con el portafolio de demostración dentro
 npm run serve        # http://localhost:4173 con guardado y descargas simuladas
 npm run check        # revisiones estáticas, sin navegador
-npm test             # 11 pruebas de extremo a extremo con Playwright
+npm test             # 14 pruebas de extremo a extremo con Playwright
 ```
 
 `npm run serve` levanta un doble de la plataforma: al guardar, la página se escribe en

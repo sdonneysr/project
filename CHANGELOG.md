@@ -2,6 +2,23 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [1.1.0] — 2026-09-11
+
+### Agregado
+- **Bitácora de avances.** Cada vez que cambia el porcentaje de una tarea se guarda un registro con
+  la fecha capturada automáticamente, el valor anterior, el nuevo, la diferencia y una nota.
+- Pestaña propia que agrupa los registros por semana, con totales de registros y puntos de avance,
+  y filtros por tarea y periodo.
+- Botón «+ Avance» en cada fila de la tabla de tareas, e historial de la tarea dentro de su
+  formulario de edición.
+- La tabla de tareas muestra la fecha y la diferencia del último registro.
+- Exportación CSV de la bitácora y sección «Avances de la semana» en el informe ejecutivo en PDF.
+- Tres pruebas nuevas: captura automática de la fecha, registro desde el formulario de la tarea, y
+  reversión del avance al borrar un registro.
+
+### Cambiado
+- Esquema de datos a la versión 4: nueva colección `avances`.
+
 ## [1.0.0] — 2026-09-10
 
 Primera versión publicable del tablero, con el repositorio, las pruebas y la documentación.

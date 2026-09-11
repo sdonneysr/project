@@ -42,7 +42,7 @@ test('exporta cada coleccion a CSV con separador de punto y coma', async () => {
   const { page } = ctx;
   await page.click('[data-tab="datos"]');
   await page.waitForTimeout(220);
-  for (const k of ['portafolio', 'tareas', 'entregables', 'riesgos', 'interesados', 'comunicaciones', 'recursos', 'costos']) {
+  for (const k of ['portafolio', 'tareas', 'avances', 'entregables', 'riesgos', 'interesados', 'comunicaciones', 'recursos', 'costos']) {
     await page.evaluate('window.__saved = null');
     await page.click(`[data-act="export"][data-k="${k}"]`);
     await page.waitForFunction('window.__saved !== null', null, { timeout: 5000 });

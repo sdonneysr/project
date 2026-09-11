@@ -162,6 +162,18 @@ td.c,th.c{text-align:center}
 .g-legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:14px;height:9px;border-radius:2px;display:inline-block}
 
+/* ---------- bitacora ---------- */
+.sem + .sem{border-top:1px solid var(--line)}
+.sem-h{display:flex;align-items:baseline;gap:9px;padding:11px 18px;background:var(--surface-2);border-bottom:1px solid var(--line);
+  font-family:var(--font-d);font-weight:600;font-size:13px}
+.sem-m{margin-left:auto;font-family:var(--font-m);font-size:12px;font-weight:400;color:var(--ink-3)}
+.sem table td{padding:9px 18px}
+.hist{border:1px solid var(--line);border-radius:var(--r-sm);max-height:168px;overflow:auto;background:var(--surface-2)}
+.hist table{font-size:13px}
+.hist td{padding:6px 10px;border-bottom:1px solid var(--line)}
+.hist tr:last-child td{border-bottom:0}
+.hist .vacio{padding:14px;color:var(--ink-3);font-size:13px}
+
 /* ---------- comunicaciones / interesados ---------- */
 .quad{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .quad .q{border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 15px;background:var(--surface-2);min-height:112px;display:flex;flex-direction:column;gap:7px}
@@ -236,10 +248,10 @@ td.c,th.c{text-align:center}
 "use strict";
 /* ============================ ESTADO ============================ */
 var DB = JSON.parse(document.getElementById('db').textContent);
-['proyectos','fases','tareas','entregables','recursos','asignaciones','costos','riesgos','alcance','interesados','comunicaciones'].forEach(function(k){ if(!Array.isArray(DB[k])) DB[k]=[]; });
+['proyectos','fases','tareas','entregables','recursos','asignaciones','costos','riesgos','alcance','interesados','comunicaciones','avances'].forEach(function(k){ if(!Array.isArray(DB[k])) DB[k]=[]; });
 var root = document.getElementById('root');
 var readOnly = false, saving = false, artifactNS = null, downloadsNS = null;
-var UI = {tab:'resumen', proy:'*', zoom:'semana', eEstado:'*', eResp:'*', tFase:'*', tEstado:'*', rEstado:'*'};
+var UI = {tab:'resumen', proy:'*', zoom:'semana', eEstado:'*', eResp:'*', tFase:'*', tEstado:'*', rEstado:'*', bTarea:'*', bPeriodo:'8'};
 try{ var s = sessionStorage.getItem('cp_ui'); if(s) UI = Object.assign(UI, JSON.parse(s)); }catch(e){}
 function saveUI(){ try{ sessionStorage.setItem('cp_ui', JSON.stringify(UI)); }catch(e){} }
 
@@ -393,6 +405,33 @@ function linkEvidencia(v){
   }
   return '<span class="t-sub">'+esc(v)+'</span>';
 }
+/* ---------- bitacora de avances ---------- */
+/* HOY se fija al cargar la pagina; un registro nuevo necesita la fecha del momento. */
+function hoyReal(){ var d=new Date(); return iso(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))); }
+function inicioSemana(f){ var dow=(new Date(pd(f)).getUTCDay()+6)%7; return addD(f,-dow); }
+function etiquetaSemana(ini){
+  var fin = addD(ini,6);
+  return 'Semana del '+fdate(ini).slice(0,5)+' al '+fdateL(fin);
+}
+function registrarAvance(t, nuevo, nota, autor, fecha){
+  var ant = pct(t.avance), nv = pct(nuevo);
+  DB.avances.push({ id:uid('av'), proyectoId:t.proyectoId, tareaId:t.id,
+    fecha: fecha || hoyReal(), ts: new Date().toISOString(),
+    avanceAnterior: ant, avanceNuevo: nv, delta: nv-ant,
+    nota: nota||'', autor: autor||'' });
+  t.avance = nv;
+  return nv-ant;
+}
+function avancesDe(tareaId){
+  return DB.avances.filter(function(a){ return a.tareaId===tareaId; })
+    .sort(function(a,b){ var x=(a.fecha||'')+(a.ts||''), y=(b.fecha||'')+(b.ts||''); return x<y?1:x>y?-1:0; });
+}
+function ultimoAvance(tareaId){ var l=avancesDe(tareaId); return l.length? l[0] : null; }
+function chipDelta(d){
+  if(d>0) return '<span class="chip ok">+'+d+' pts</span>';
+  if(d<0) return '<span class="chip risk">'+d+' pts</span>';
+  return '<span class="chip mute plain">sin cambio</span>';
+}
 function entAbierto(e){ var x=e.estado||'Pendiente'; return x!=='Aprobado' && x!=='Entregado'; }
 function alertaFecha(fecha, cerrado){
   if(!fecha || cerrado) return null;
@@ -452,7 +491,7 @@ function hacerGuardado(){
 }
 
 /* ============================ RENDER: MARCO ============================ */
-var TABS = [['resumen','Resumen ejecutivo'],['cronograma','Cronograma'],['entregables','Entregables'],['tareas','Tareas'],['riesgos','Riesgos'],['comunicaciones','Comunicaciones'],['recursos','Recursos y costos'],['ficha','Ficha del proyecto'],['datos','Datos']];
+var TABS = [['resumen','Resumen ejecutivo'],['cronograma','Cronograma'],['entregables','Entregables'],['tareas','Tareas'],['riesgos','Riesgos'],['bitacora','Bitácora'],['comunicaciones','Comunicaciones'],['recursos','Recursos y costos'],['ficha','Ficha del proyecto'],['datos','Datos']];
 
 function selProyecto(){
   var o = '<option value="*">Todos los proyectos</option>';
@@ -603,6 +642,80 @@ function vistaRiesgos(){
       : vacio('Sin riesgos registrados','Registra los riesgos del proyecto con su probabilidad, impacto y plan de contingencia.','<div style="margin-top:12px"><button class="btn btn-primary" data-act="nuevo-riesgo">Registrar riesgo</button></div>'))
     + '</div>'
     + '<div class="g-legend no-print">El nivel se calcula cruzando probabilidad e impacto: Alto (rojo) exige plan activo, Medio seguimiento, Bajo monitoreo.</div>'
+    + '</section>';
+}
+
+/* ============================ VISTA: BITÁCORA DE AVANCES ============================ */
+function vistaBitacora(){
+  var ids = idsVisibles();
+  var todos = DB.avances.filter(function(a){ return ids.indexOf(a.proyectoId)>=0; });
+
+  var semActual = inicioSemana(HOY);
+  var deSemana = todos.filter(function(a){ return a.fecha>=semActual && a.fecha<=addD(semActual,6); });
+  var tocadas = {}; deSemana.forEach(function(a){ tocadas[a.tareaId]=1; });
+  var puntos = deSemana.reduce(function(s,a){ return s+(Number(a.delta)||0); }, 0);
+  var sinNota = todos.filter(function(a){ return !a.nota; }).length;
+
+  var kpis = '<section class="kpis">'
+    + kpi('Registros esta semana', deSemana.length, etiquetaSemana(semActual))
+    + kpi('Puntos de avance', (puntos>0?'+':'')+puntos, 'Suma de los cambios de porcentaje en la semana')
+    + kpi('Tareas movidas', Object.keys(tocadas).length, deSemana.length? 'Sobre '+DB.tareas.filter(function(t){return ids.indexOf(t.proyectoId)>=0;}).length+' tareas del filtro' : 'Ninguna tarea reportada aún')
+    + kpi('Registros acumulados', todos.length, sinNota? sinNota+' sin nota' : (todos.length? 'Todos con nota':'Sin registros'))
+    + '</section>';
+
+  /* --- filtros --- */
+  var tareasFiltro = DB.tareas.filter(function(t){ return ids.indexOf(t.proyectoId)>=0; });
+  var optTarea = '<option value="*">Todas las tareas</option>' + sortBy(tareasFiltro,function(t){return t.nombre;})
+    .map(function(t){ return '<option value="'+t.id+'"'+(UI.bTarea===t.id?' selected':'')+'>'+esc(t.nombre)+'</option>'; }).join('');
+  var PERIODOS = [['4','Últimas 4 semanas'],['8','Últimas 8 semanas'],['26','Últimas 26 semanas'],['*','Todo el historial']];
+  var optPeriodo = PERIODOS.map(function(p){ return '<option value="'+p[0]+'"'+(UI.bPeriodo===p[0]?' selected':'')+'>'+p[1]+'</option>'; }).join('');
+
+  var lista = todos.filter(function(a){
+    if(UI.bTarea!=='*' && a.tareaId!==UI.bTarea) return false;
+    if(UI.bPeriodo!=='*' && a.fecha < addD(semActual, -7*(Number(UI.bPeriodo)-1))) return false;
+    return true;
+  });
+
+  /* --- agrupado por semana, de la más reciente a la más antigua --- */
+  var semanas = {};
+  lista.forEach(function(a){ var k=inicioSemana(a.fecha); (semanas[k]=semanas[k]||[]).push(a); });
+  var claves = Object.keys(semanas).sort().reverse();
+
+  var cuerpo = claves.map(function(k){
+    var filas = semanas[k].slice().sort(function(a,b){ var x=(a.fecha||'')+(a.ts||''), y=(b.fecha||'')+(b.ts||''); return x<y?1:x>y?-1:0; });
+    var pts = filas.reduce(function(s,a){ return s+(Number(a.delta)||0); }, 0);
+    var esActual = (k===semActual);
+    return '<div class="sem">'
+      + '<div class="sem-h">'+esc(etiquetaSemana(k))
+      +   (esActual? ' <span class="chip info">En curso</span>':'')
+      +   '<span class="sem-m">'+filas.length+' registro'+(filas.length===1?'':'s')+' · '+(pts>0?'+':'')+pts+' pts</span></div>'
+      + '<div class="tw"><table><tbody>'
+      + filas.map(function(a){
+          var t = byId(DB.tareas, a.tareaId);
+          var f = t? byId(DB.fases, t.faseId) : null;
+          return '<tr>'
+            + '<td class="mono t-sub" style="width:92px;white-space:nowrap">'+fdate(a.fecha)+'</td>'
+            + '<td><div class="t-strong">'+esc(t? t.nombre : 'Tarea eliminada')+'</div>'
+            +   '<div class="t-sub">'+esc(codProy(a.proyectoId))+(f?' · '+esc(f.nombre):'')+(a.autor?' · '+esc(a.autor):'')+'</div></td>'
+            + '<td style="width:150px;white-space:nowrap"><span class="mono">'+a.avanceAnterior+'% → '+a.avanceNuevo+'%</span><div>'+chipDelta(a.delta)+'</div></td>'
+            + '<td>'+(a.nota? esc(a.nota) : '<span style="color:var(--ink-3)">Sin nota</span>')+'</td>'
+            + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-avance" data-id="'+a.id+'">Editar</button></td>')
+            + '</tr>';
+        }).join('')
+      + '</tbody></table></div></div>';
+  }).join('');
+
+  return kpis
+    + '<section class="card"><div class="card-h"><h2>Bitácora de avances</h2>'
+    + '<span class="hint">'+lista.length+' de '+todos.length+' registro'+(todos.length===1?'':'s')+'</span></div>'
+    + '<div class="card-b no-print"><div class="toolbar">'
+    + '<label class="fld"><span>Tarea</span><select data-ui="bTarea">'+optTarea+'</select></label>'
+    + '<label class="fld"><span>Periodo</span><select data-ui="bPeriodo">'+optPeriodo+'</select></label>'
+    + (readOnly?'':'<div class="grow"><button class="btn btn-primary" data-act="nuevo-avance">+ Registrar avance</button></div>')
+    + '</div></div>'
+    + '<div class="card-b flush">'+(cuerpo || vacio('Sin avances registrados',
+        'Cada vez que muevas el porcentaje de una tarea, el tablero guarda la fecha automáticamente y te deja dejar una nota. Así se arma la trazabilidad semana a semana.',
+        '<div style="margin-top:12px"><button class="btn btn-primary" data-act="nuevo-avance">Registrar el primer avance</button></div>'))+'</div>'
     + '</section>';
 }
 
@@ -836,15 +949,19 @@ function vistaTareas(){
     var conflicto = (t.predecesorasIds||[]).some(function(id){ var x=byId(DB.tareas,id); return x && x.fechaFin && t.fechaInicio && t.fechaInicio < x.fechaFin; });
     var al = alertaFecha(t.fechaFin, t.estado==='Completada');
     var dur = (t.fechaInicio&&t.fechaFin)? (diasEntre(t.fechaInicio,t.fechaFin)+1) : null;
+    var ua = ultimoAvance(t.id);
     return '<tr>'
       + '<td><div class="t-strong">'+(t.esHito?'◆ ':'')+esc(t.nombre)+'</div><div class="t-sub">'+esc(codProy(t.proyectoId))+(f?' · '+esc(f.nombre):'')+'</div></td>'
       + '<td>'+esc(nombreRec(t.responsableId))+'</td>'
       + '<td class="mono" style="white-space:nowrap">'+fdate(t.fechaInicio)+' → '+fdate(t.fechaFin)+'</td>'
       + '<td class="c num">'+(dur!=null?dur+' d':'—')+'</td>'
-      + '<td style="min-width:150px">'+barra(t.avance)+'</td>'
+      + '<td style="min-width:150px">'+barra(t.avance)
+        + (ua? '<div class="t-sub">'+fdate(ua.fecha)+' · '+(ua.delta>0?'+':'')+ua.delta+' pts</div>'
+             : '<div class="t-sub" style="color:var(--ink-3)">Sin registros</div>')+'</td>'
       + '<td>'+chipTar(t.estado)+(al?' <span class="chip '+al.c+'">'+esc(al.t)+'</span>':'')+'</td>'
       + '<td class="t-sub">'+(preds.length?esc(preds.join(', ')):'—')+(conflicto?' <span class="chip risk">Choca con predecesora</span>':'')+'</td>'
-      + (readOnly?'':'<td class="r no-print"><button class="btn btn-sm btn-ghost" data-act="edit-tarea" data-id="'+t.id+'">Editar</button></td>')
+      + (readOnly?'':'<td class="r no-print" style="white-space:nowrap"><button class="btn btn-sm" data-act="avance-tarea" data-id="'+t.id+'">+ Avance</button> '
+          + '<button class="btn btn-sm btn-ghost" data-act="edit-tarea" data-id="'+t.id+'">Editar</button></td>')
       + '</tr>';
   }).join('');
 
@@ -855,7 +972,7 @@ function vistaTareas(){
     + (readOnly?'':'<div class="grow"><button class="btn" data-act="nueva-fase">+ Fase</button> <button class="btn btn-primary" data-act="nueva-tarea">+ Tarea</button></div>')
     + '</div></div>'
     + '<div class="card-b flush">'+ (cuerpo
-      ? '<div class="tw"><table><thead><tr><th>Tarea</th><th>Responsable</th><th>Fechas</th><th class="c">Dur.</th><th>Avance</th><th>Estado</th><th>Predecesoras</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+cuerpo+'</tbody></table></div>'
+      ? '<div class="tw"><table><thead><tr><th>Tarea</th><th>Responsable</th><th>Fechas</th><th class="c">Dur.</th><th>Avance / último registro</th><th>Estado</th><th>Predecesoras</th>'+(readOnly?'':'<th class="no-print"></th>')+'</tr></thead><tbody>'+cuerpo+'</tbody></table></div>'
       : vacio('Sin tareas','Crea al menos una fase y luego las tareas que la componen para ver el cronograma.','<div style="margin-top:12px;display:flex;gap:10px;justify-content:center"><button class="btn" data-act="nueva-fase">Crear fase</button><button class="btn btn-primary" data-act="nueva-tarea">Crear tarea</button></div>'))
     + '</div></section>';
 }
@@ -1084,7 +1201,7 @@ function vistaRecursos(){
 
 /* ============================ VISTA: DATOS ============================ */
 function vistaDatos(){
-  var conteo = [['Proyectos',DB.proyectos.length],['Fases',DB.fases.length],['Tareas',DB.tareas.length],['Entregables',DB.entregables.length],['Riesgos',DB.riesgos.length],['Interesados',DB.interesados.length],['Comunicaciones',DB.comunicaciones.length],['Personas',DB.recursos.length],['Asignaciones',DB.asignaciones.length],['Registros de costo',DB.costos.length]];
+  var conteo = [['Proyectos',DB.proyectos.length],['Fases',DB.fases.length],['Tareas',DB.tareas.length],['Entregables',DB.entregables.length],['Riesgos',DB.riesgos.length],['Registros de avance',DB.avances.length],['Interesados',DB.interesados.length],['Comunicaciones',DB.comunicaciones.length],['Personas',DB.recursos.length],['Asignaciones',DB.asignaciones.length],['Registros de costo',DB.costos.length]];
   var listaProy = DB.proyectos.length ? '<div class="tw"><table><thead><tr><th>Proyecto</th><th>Fases</th><th>Tareas</th><th>Entregables</th>'+(readOnly?'':'<th class="no-print r"></th>')+'</tr></thead><tbody>'
     + DB.proyectos.map(function(p){ return '<tr><td><div class="t-strong">'+esc(p.nombre)+'</div><div class="t-sub mono">'+esc(p.codigo||'')+'</div></td>'
       + '<td class="num">'+fasesDe(p.id).length+'</td><td class="num">'+tareasDe(p.id).length+'</td><td class="num">'+DB.entregables.filter(function(e){return e.proyectoId===p.id;}).length+'</td>'
@@ -1099,7 +1216,7 @@ function vistaDatos(){
 
     + '<section class="card"><div class="card-h"><h2>Exportar</h2><span class="hint">CSV compatible con Excel (separador punto y coma)</span></div><div class="card-b">'
     + '<div class="toolbar">'
-    + ['portafolio','tareas','entregables','riesgos','interesados','comunicaciones','recursos','costos'].map(function(k){ return '<button class="btn" data-act="export" data-k="'+k+'">'+k.charAt(0).toUpperCase()+k.slice(1)+'</button>'; }).join('')
+    + ['portafolio','tareas','avances','entregables','riesgos','interesados','comunicaciones','recursos','costos'].map(function(k){ return '<button class="btn" data-act="export" data-k="'+k+'">'+k.charAt(0).toUpperCase()+k.slice(1)+'</button>'; }).join('')
     + '</div><p class="t-sub" style="margin:12px 0 0">Si tu navegador no permite descargas desde este panel, el botón te avisará y podrás copiar los datos desde las tablas.</p></div></section>'
 
     + (readOnly?'' : '<section class="card"><div class="card-h"><h2>Estructura y limpieza</h2></div><div class="card-b"><div class="toolbar">'
@@ -1130,6 +1247,7 @@ function campoHTML(c, val){
   }
   else if(c.tipo==='textarea') inner = '<textarea id="'+id+'" rows="3">'+esc(val==null?'':val)+'</textarea>';
   else if(c.tipo==='check') return '<div'+cls+'><label class="chkline"><input type="checkbox" id="'+id+'"'+(val?' checked':'')+'> '+esc(c.label)+'</label></div>';
+  else if(c.tipo==='html') return '<div'+cls+'><span class="fld" style="display:block;margin-bottom:6px">'+esc(c.label)+'</span>'+c.html+'</div>';
   else if(c.tipo==='multi'){
     var arr = Array.isArray(val)?val:[];
     inner = '<div class="multi" id="'+id+'">'+(c.opts.length? c.opts.map(function(x){
@@ -1160,6 +1278,7 @@ function abrirForm(spec){
     if(f==='ok'){
       var out={}, falta=null;
       spec.campos.forEach(function(c){
+        if(c.tipo==='html') return;
         var el = ovl.querySelector('#f_'+c.k);
         var v;
         if(c.tipo==='check') v = el.checked;
@@ -1208,7 +1327,7 @@ function formProyecto(p){
 }
 function borrarProyecto(id){
   DB.proyectos = DB.proyectos.filter(function(x){return x.id!==id;});
-  ['fases','tareas','entregables','asignaciones','costos','riesgos','alcance','interesados','comunicaciones'].forEach(function(k){ DB[k]=DB[k].filter(function(x){return x.proyectoId!==id;}); });
+  ['fases','tareas','entregables','asignaciones','costos','riesgos','alcance','interesados','comunicaciones','avances'].forEach(function(k){ DB[k]=DB[k].filter(function(x){return x.proyectoId!==id;}); });
   DB.tareas.forEach(function(t){ if(t.predecesorasIds) t.predecesorasIds = t.predecesorasIds.filter(function(pid){ return !!byId(DB.tareas,pid); }); });
   if(UI.proy===id) UI.proy='*';
   guardar();
@@ -1239,6 +1358,15 @@ function ciclo(idTarea, preds){
   }
   return false;
 }
+function historialHTML(tareaId){
+  var l = avancesDe(tareaId);
+  if(!l.length) return '<div class="hist"><div class="vacio">Sin avances registrados todavía.</div></div>';
+  return '<div class="hist"><table><tbody>'+l.map(function(a){
+    return '<tr><td class="mono t-sub" style="width:78px;white-space:nowrap">'+fdate(a.fecha)+'</td>'
+      + '<td class="mono" style="width:92px;white-space:nowrap">'+a.avanceAnterior+'% → '+a.avanceNuevo+'%</td>'
+      + '<td>'+(a.nota? esc(a.nota) : '<span style="color:var(--ink-3)">Sin nota</span>')+'</td></tr>';
+  }).join('')+'</tbody></table></div>';
+}
 function formTarea(t){
   if(!DB.proyectos.length) return toast('Crea primero un proyecto.');
   var pid = t? t.proyectoId : proyDefecto();
@@ -1253,17 +1381,105 @@ function formTarea(t){
       {k:'fechaInicio',label:'Inicio',tipo:'date',req:true},
       {k:'fechaFin',label:'Fin',tipo:'date',req:true},
       {k:'avance',label:'Avance (%)',tipo:'number',min:0},
+      {k:'notaAvance',label:'Nota del avance (si cambias el %)',tipo:'textarea',full:true},
       {k:'esHito',label:'Es un hito (marca una fecha, sin duración)',tipo:'check',full:true},
       {k:'predecesorasIds',label:'Predecesoras (deben terminar antes)',tipo:'multi',opts:candidatas,full:true}
-    ],
+    ].concat(t? [{k:'_hist',label:'Historial de avances de esta tarea',tipo:'html',full:true,html:historialHTML(t.id)}] : []),
     validar:function(o){
       var e = valFechas(o,'fechaInicio','fechaFin'); if(e) return e;
       if(t && ciclo(t.id, o.predecesorasIds)) return 'Esa dependencia crea un ciclo entre tareas.';
       return null;
     },
-    onGuardar:function(o){ if(o.esHito) o.fechaFin=o.fechaInicio; if(t) Object.assign(t,o); else { o.id=uid('t'); DB.tareas.push(o); } guardar(); },
+    onGuardar:function(o){
+      var nota = o.notaAvance || ''; delete o.notaAvance; delete o._hist;
+      if(o.esHito) o.fechaFin=o.fechaInicio;
+      if(t){
+        var antes = pct(t.avance), ahora = pct(o.avance);
+        Object.assign(t,o);
+        /* la fecha del registro se toma sola: solo se pide la nota */
+        if(antes!==ahora){ t.avance = antes; registrarAvance(t, ahora, nota, ''); }
+      } else {
+        o.id=uid('t'); DB.tareas.push(o);
+        if(pct(o.avance)>0){ var nv=pct(o.avance); o.avance=0; registrarAvance(o, nv, nota || 'Avance inicial al crear la tarea', ''); }
+      }
+      guardar();
+    },
     onEliminar: t? function(){ DB.tareas=DB.tareas.filter(function(x){return x.id!==t.id;});
+      DB.avances=DB.avances.filter(function(a){ return a.tareaId!==t.id; });
       DB.tareas.forEach(function(x){ if(x.predecesorasIds) x.predecesorasIds=x.predecesorasIds.filter(function(i){return i!==t.id;}); }); guardar(); } : null
+  });
+}
+/* Registro rapido: la fecha viene puesta con la de hoy y solo se escribe el avance y la nota. */
+function formAvance(t){
+  if(!t){
+    var cand = DB.tareas.filter(function(x){ return idsVisibles().indexOf(x.proyectoId)>=0; });
+    if(!cand.length) return toast('Crea primero una tarea.');
+  }
+  var grupos = DB.proyectos.map(function(p){
+    return { label:(p.codigo||p.nombre), opts: sortBy(tareasDe(p.id),function(x){return x.nombre;}).map(function(x){ return {v:x.id, t:x.nombre+'  ('+pct(x.avance)+'%)'}; }) };
+  }).filter(function(g){ return g.opts.length; });
+  var resp = t && t.responsableId ? nombreRec(t.responsableId) : '';
+
+  abrirForm({ titulo:'Registrar avance',
+    valores: { tareaId: t? t.id : '', fecha: hoyReal(), avanceNuevo: t? pct(t.avance) : 0, autor: resp },
+    campos: [
+      {k:'tareaId',label:'Tarea',tipo:'selectg',grupos:grupos,req:true,full:true},
+      {k:'fecha',label:'Fecha del avance',tipo:'date',req:true},
+      {k:'avanceNuevo',label:'Avance acumulado (%)',tipo:'number',min:0,req:true},
+      {k:'autor',label:'Quién reporta'},
+      {k:'estadoAuto',label:'Ajustar el estado de la tarea según el avance',tipo:'check',full:true},
+      {k:'nota',label:'Nota: qué se hizo, qué falta, qué bloquea',tipo:'textarea',full:true}
+    ].concat(t? [{k:'_hist',label:'Historial de esta tarea',tipo:'html',full:true,html:historialHTML(t.id)}] : []),
+    validar:function(o){
+      if(o.avanceNuevo>100) return 'El avance no puede superar el 100%.';
+      if(!byId(DB.tareas,o.tareaId)) return 'Selecciona una tarea.';
+      return null;
+    },
+    onGuardar:function(o){
+      var tarea = byId(DB.tareas, o.tareaId);
+      var d = registrarAvance(tarea, o.avanceNuevo, o.nota, o.autor, o.fecha);
+      if(o.estadoAuto){
+        if(tarea.avance>=100) tarea.estado='Completada';
+        else if(tarea.avance>0) tarea.estado='En curso';
+        else tarea.estado='Pendiente';
+      }
+      UI.tab='bitacora';
+      guardar();
+      toast(d>0? 'Avance registrado: +'+d+' puntos.' : (d<0? 'Avance corregido: '+d+' puntos.' : 'Nota registrada, sin cambio de porcentaje.'));
+    }
+  });
+  /* la casilla de estado viene marcada: es lo que casi siempre se quiere */
+  var chk = document.querySelector('#f_estadoAuto'); if(chk) chk.checked = true;
+}
+function formEditAvance(a){
+  if(!a) return;
+  var t = byId(DB.tareas, a.tareaId);
+  abrirForm({ titulo:'Editar registro de avance',
+    valores: a,
+    campos: [
+      {k:'fecha',label:'Fecha del avance',tipo:'date',req:true},
+      {k:'autor',label:'Quién reporta'},
+      {k:'avanceAnterior',label:'Avance anterior (%)',tipo:'number',min:0},
+      {k:'avanceNuevo',label:'Avance reportado (%)',tipo:'number',min:0},
+      {k:'nota',label:'Nota',tipo:'textarea',full:true},
+      {k:'_t',label:'Tarea',tipo:'html',full:true,html:'<div class="hist"><div class="vacio">'+esc(t? t.nombre : 'Tarea eliminada')+'</div></div>'}
+    ],
+    validar:function(o){ if(o.avanceNuevo>100||o.avanceAnterior>100) return 'El avance no puede superar el 100%.'; return null; },
+    onGuardar:function(o){
+      delete o._t;
+      Object.assign(a,o);
+      a.delta = pct(a.avanceNuevo) - pct(a.avanceAnterior);
+      /* si es el registro mas reciente, la tarea se alinea con el */
+      var u = ultimoAvance(a.tareaId);
+      if(t && u && u.id===a.id) t.avance = pct(a.avanceNuevo);
+      guardar();
+    },
+    onEliminar: function(){
+      DB.avances = DB.avances.filter(function(x){ return x.id!==a.id; });
+      var u2 = ultimoAvance(a.tareaId);
+      if(t && u2) t.avance = pct(u2.avanceNuevo);
+      guardar();
+    }
   });
 }
 function formEntregable(e){
@@ -1488,6 +1704,11 @@ function armarCSV(k){
   if(k==='recursos') return csvDoc(['Persona','Rol','Area','Costo hora COP','Proyecto','% Dedicacion','Desde','Hasta'],
     DB.asignaciones.filter(function(a){return ids.indexOf(a.proyectoId)>=0;}).map(function(a){ var r=byId(DB.recursos,a.recursoId)||{};
       return [r.nombre,r.rol,r.area,Number(r.costoHoraCOP)||0,codProy(a.proyectoId),Number(a.porcentajeAsignacion)||0,fdate(a.fechaDesde),fdate(a.fechaHasta)]; }));
+  if(k==='avances') return csvDoc(['Proyecto','Fase','Tarea','Semana','Fecha','Avance anterior %','Avance reportado %','Delta','Quien reporta','Nota'],
+    sortBy(DB.avances.filter(function(a){return ids.indexOf(a.proyectoId)>=0;}), function(a){ return (a.fecha||'')+(a.ts||''); })
+      .map(function(a){ var t=byId(DB.tareas,a.tareaId), f=t?byId(DB.fases,t.faseId):null;
+        return [codProy(a.proyectoId), f?f.nombre:'', t?t.nombre:'(tarea eliminada)', fdate(inicioSemana(a.fecha)),
+          fdate(a.fecha), a.avanceAnterior, a.avanceNuevo, a.delta, a.autor, a.nota]; }));
   if(k==='comunicaciones') return csvDoc(['Proyecto','Que se comunica','Proposito','Destinatarios','Canal','Frecuencia','Fecha inicio','Proxima','Prepara','Aprueba','Envia','Formato','Evidencia','Estado'],
     DB.comunicaciones.filter(function(c){return ids.indexOf(c.proyectoId)>=0;}).map(function(c){ var pr=proximaCom(c);
       return [codProy(c.proyectoId),c.que,c.porQue,c.destinatarios,c.canal,c.frecuencia,fdate(c.fechaInicio),
@@ -1673,6 +1894,24 @@ function generarPDF(){
           nombreRec(e.responsableId), pct(e.avance)+'%', e.estado||'Pendiente']; }));
     }
 
+    /* ---------- bitácora de la semana ---------- */
+    var semIni = inicioSemana(HOY), semFin = addD(semIni, 6);
+    var avSem = sortBy(DB.avances.filter(function(a){
+      return ids.indexOf(a.proyectoId)>=0 && a.fecha>=semIni && a.fecha<=semFin;
+    }), function(a){ return (a.fecha||'')+(a.ts||''); });
+    h2('Avances de la semana');
+    var pts = avSem.reduce(function(acc,a){ return acc+(Number(a.delta)||0); }, 0);
+    parrafo(etiquetaSemana(semIni) + '.  ' + (avSem.length
+      ? avSem.length+' registro'+(avSem.length===1?'':'s')+', '+(pts>0?'+':'')+pts+' puntos de avance.'
+      : 'Sin avances reportados en la semana.'));
+    if(avSem.length){
+      tabla([{t:'Fecha',w:20},{t:'Tarea',w:60,b:true},{t:'Avance',w:24},{t:'Reporta',w:24},{t:'Nota',w:54}],
+        avSem.map(function(a){ var t=byId(DB.tareas,a.tareaId);
+          return [fdate(a.fecha), t? t.nombre : '(tarea eliminada)',
+                  a.avanceAnterior+'% a '+a.avanceNuevo+'% ('+(a.delta>0?'+':'')+a.delta+')',
+                  a.autor||'-', a.nota||'-']; }));
+    }
+
     /* ---------- avance por entregable del proyecto único ---------- */
     if(UI.proy!=='*' && ents.length){
       h2('Avance por entregable');
@@ -1792,6 +2031,26 @@ function cargarEjemplo(){
   C(p2,'Consultoría externa','Proveedor',24000000,d(20),'Planeado');
   G(p2,'Disponibilidad de los interesados','Stakeholders','Alta','Alto','Plan de comunicación y comité de escalamiento.');
 
+  /* bitacora: unas semanas de historial para que la trazabilidad se vea con datos */
+  function AV(tarea, semanasAtras, deAv, aAv, nota, autor){
+    DB.avances.push({ id:uid('av'), proyectoId:tarea.proyectoId, tareaId:tarea.id,
+      fecha: addD(inicioSemana(HOY), -7*semanasAtras + 3), ts:'',
+      avanceAnterior:deAv, avanceNuevo:aAv, delta:aAv-deAv, nota:nota, autor:autor||'' });
+  }
+  var bt = function(nombre){ return DB.tareas.filter(function(x){ return x.nombre===nombre; })[0]; };
+  var tCot = bt('Cotizador en línea'), tAcc = bt('Accesibilidad del portal'),
+      tMic = bt('Despliegue del micrositio'), tPlan = bt('Redacción del plan');
+  if(tCot){ AV(tCot,1,0,5,'Arranque: modelo de datos y esqueleto del formulario.','Desarrollador senior');
+            AV(tCot,0,5,10,'Integración con el catálogo de productos; falta el cálculo de tarifas.','Desarrollador senior'); }
+  if(tAcc){ AV(tAcc,3,0,15,'Auditoría inicial: 42 hallazgos clasificados por severidad.','Desarrollador senior');
+            AV(tAcc,2,15,25,'Corregidos los de contraste y foco de teclado.','Desarrollador senior');
+            AV(tAcc,0,25,35,'Formularios con etiquetas y mensajes de error accesibles.','Desarrollador senior'); }
+  if(tMic){ AV(tMic,2,0,50,'Infraestructura aprovisionada y dominio configurado.','Ingeniero de infraestructura');
+            AV(tMic,0,50,80,'Despliegue en ambiente de pruebas; pendiente el certificado de producción.','Ingeniero de infraestructura'); }
+  if(tPlan){ AV(tPlan,2,0,40,'Procesos críticos levantados con las áreas.','Líder funcional');
+             AV(tPlan,1,40,60,'Redactadas las estrategias de recuperación.','Líder funcional');
+             AV(tPlan,0,60,60,'Sin avance esta semana: pendiente la validación del cliente.','Líder funcional'); }
+
   /* el avance de cada entregable se deja cuadrado con el promedio de las tareas de su fase */
   DB.entregables.forEach(function(e){ var c=avanceCalcEntregable(e); if(c) e.avance=c.v; });
 
@@ -1817,6 +2076,9 @@ document.addEventListener('click', function(ev){
     case 'del-proyecto': if(confirm('Se eliminará el proyecto y todo lo asociado (fases, tareas, entregables, asignaciones y costos). ¿Continuar?')) borrarProyecto(id); break;
     case 'nueva-fase': formFase(null); break;
     case 'nueva-tarea': formTarea(null); break;
+    case 'nuevo-avance': formAvance(null); break;
+    case 'avance-tarea': formAvance(byId(DB.tareas,id)); break;
+    case 'edit-avance': formEditAvance(byId(DB.avances,id)); break;
     case 'edit-tarea': formTarea(byId(DB.tareas,id)); break;
     case 'nuevo-entregable': formEntregable(null); break;
     case 'ajustar-avances': {
@@ -1846,7 +2108,7 @@ document.addEventListener('click', function(ev){
       cargarEjemplo(); break;
     case 'borrar-todo':
       if(confirm('Se borrará TODO el contenido del tablero de forma permanente. ¿Continuar?')){
-        DB = {v:3,proyectos:[],fases:[],tareas:[],entregables:[],recursos:[],asignaciones:[],costos:[],riesgos:[],alcance:[],interesados:[],comunicaciones:[]};
+        DB = {v:4,proyectos:[],fases:[],tareas:[],entregables:[],recursos:[],asignaciones:[],costos:[],riesgos:[],alcance:[],interesados:[],comunicaciones:[],avances:[]};
         UI.proy='*'; guardar();
       } break;
   }
@@ -1865,6 +2127,7 @@ function vistaActual(){
     case 'entregables': return vistaEntregables();
     case 'tareas': return vistaTareas();
     case 'riesgos': return vistaRiesgos();
+    case 'bitacora': return vistaBitacora();
     case 'comunicaciones': return vistaComunicaciones();
     case 'ficha': return vistaFicha();
     case 'recursos': return vistaRecursos();

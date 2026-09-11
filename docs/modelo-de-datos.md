@@ -64,6 +64,17 @@ La próxima ocurrencia se calcula, no se guarda: se itera desde `fechaInicio` co
 frecuencia hasta pasar hoy. `Diaria` salta fines de semana; `Mensual` respeta el día del mes y lo
 recorta en meses cortos; `Por hito/entregable` y `Según necesidad` no tienen fecha.
 
+### `avances`
+`id`, `proyectoId`, `tareaId`, `fecha` (`AAAA-MM-DD`, capturada sola al registrar), `ts` (marca de
+tiempo completa, solo para ordenar dentro del mismo día), `avanceAnterior`, `avanceNuevo`, `delta`,
+`nota`, `autor`.
+
+Es un libro de asientos: cada fila es un hecho fechado y no se recalcula. La tarea guarda el
+acumulado y la bitácora guarda cómo se llegó a él. Borrar el registro más reciente de una tarea
+devuelve la tarea al valor del anterior; borrar la tarea borra su historial.
+
+Un registro con `delta` cero es válido y útil: deja constancia de una semana sin avance y su motivo.
+
 ### `alcance`
 `id`, `proyectoId`, `dimension`, `alcance`, `descripcion`. Una fila por dimensión.
 La fila cuya dimensión contiene «fuera» se resalta.
@@ -97,6 +108,7 @@ Nada de esto se guarda; todo se recalcula al pintar.
 | Cuadrante de un interesado | Poder × interés |
 | Próxima comunicación | Iteración desde la fecha de inicio con el paso de la frecuencia |
 | Consumo de presupuesto | Suma de costos ejecutados sobre el presupuesto del proyecto |
+| Semana de un registro | Lunes de la semana de su fecha; la bitácora agrupa por ahí |
 
 Los dos primeros usan criterios distintos **a propósito**: un entregable es un producto y sus
 tareas pesan igual, mientras que el avance de un proyecto se distorsiona si una tarea de dos días

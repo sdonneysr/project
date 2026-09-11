@@ -7,14 +7,14 @@ before(async () => { ctx = await abrirTablero('dist/dashboard.html'); });
 after(async () => { await ctx.browser.close(); });
 
 const PESTANAS = ['resumen', 'cronograma', 'entregables', 'tareas', 'riesgos',
-  'comunicaciones', 'recursos', 'ficha', 'datos'];
+  'bitacora', 'comunicaciones', 'recursos', 'ficha', 'datos'];
 
 test('carga sin errores de consola', async () => {
   assert.deepEqual(ctx.errores, []);
   assert.equal(await ctx.page.locator('.brand h1').textContent(), 'Control de Portafolio');
 });
 
-test('las nueve pestanas navegan y pintan contenido', async () => {
+test('las diez pestanas navegan y pintan contenido', async () => {
   for (const t of PESTANAS) {
     await ctx.page.click(`[data-tab="${t}"]`);
     await ctx.page.waitForTimeout(180);
@@ -137,4 +137,91 @@ test('el modo de solo lectura oculta los botones de edicion', async () => {
     assert.ok(await page.locator('[data-act="pdf"]').count() > 0, 'sin boton de PDF');
     assert.ok(await page.locator('[data-ui="proy"]').count() > 0, 'sin filtro de proyecto');
   } finally { await browser.close(); }
+});
+
+test('la bitacora registra fecha automatica y nota al mover el avance', async () => {
+  const { page, recargar } = ctx;
+  await page.click('[data-tab="bitacora"]');
+  await page.waitForTimeout(220);
+  const antes = (await leerDB(page)).avances.length;
+
+  // registro rapido desde la tabla de tareas
+  await page.click('[data-tab="tareas"]');
+  await page.waitForTimeout(200);
+  const db = await leerDB(page);
+  const t = db.tareas.find(x => x.avance < 100);
+  await page.click(`[data-act="avance-tarea"][data-id="${t.id}"]`);
+  await page.waitForTimeout(220);
+
+  // la fecha viene puesta sola con la de hoy
+  const hoy = new Date();
+  const iso = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+  assert.equal(await page.inputValue('#f_fecha'), iso, 'la fecha no se capturo automaticamente');
+
+  await page.fill('#f_avanceNuevo', String(Math.min(100, t.avance + 10)));
+  await page.fill('#f_nota', 'Nota de prueba de trazabilidad.');
+  await page.fill('#f_autor', 'Quien reporta');
+  await page.click('[data-f="ok"]');
+  await recargar();
+
+  const db2 = await leerDB(page);
+  assert.equal(db2.avances.length, antes + 1, 'no se creo el registro');
+  const a = db2.avances.find(x => x.nota === 'Nota de prueba de trazabilidad.');
+  assert.ok(a, 'no se guardo la nota');
+  assert.equal(a.fecha, iso);
+  assert.equal(a.avanceAnterior, t.avance);
+  assert.equal(a.delta, a.avanceNuevo - a.avanceAnterior);
+  assert.equal(db2.tareas.find(x => x.id === t.id).avance, a.avanceNuevo, 'la tarea no quedo con el avance nuevo');
+
+  // y aparece en la bitacora, agrupado por semana
+  await page.click('[data-tab="bitacora"]');
+  await page.waitForTimeout(250);
+  assert.match(await page.locator('.sem-h').first().innerText(), /Semana del .* al .*/);
+  assert.ok((await page.locator('.sem').count()) >= 1);
+  assert.match(await page.locator('.sem table').first().innerText(), /Nota de prueba de trazabilidad/);
+  assert.deepEqual(ctx.errores, []);
+});
+
+test('cambiar el % desde el formulario de la tarea tambien deja registro', async () => {
+  const { page, recargar } = ctx;
+  await page.click('[data-tab="tareas"]');
+  await page.waitForTimeout(200);
+  const db = await leerDB(page);
+  const t = db.tareas.find(x => x.avance < 100);
+  const antes = db.avances.length;
+
+  await page.click(`[data-act="edit-tarea"][data-id="${t.id}"]`);
+  await page.waitForTimeout(220);
+  assert.ok(await page.locator('.hist').count() > 0, 'el formulario no muestra el historial');
+  await page.fill('#f_avance', String(Math.min(100, t.avance + 5)));
+  await page.fill('#f_notaAvance', 'Cambio hecho desde el formulario de la tarea.');
+  await page.click('[data-f="ok"]');
+  await recargar();
+
+  const db2 = await leerDB(page);
+  assert.equal(db2.avances.length, antes + 1);
+  assert.ok(db2.avances.some(a => a.nota === 'Cambio hecho desde el formulario de la tarea.'));
+  assert.deepEqual(ctx.errores, []);
+});
+
+test('borrar un registro devuelve la tarea al avance anterior', async () => {
+  const { page, recargar } = ctx;
+  await page.click('[data-tab="bitacora"]');
+  await page.waitForTimeout(250);
+  const db = await leerDB(page);
+  const conVarios = db.tareas.find(t => db.avances.filter(a => a.tareaId === t.id).length >= 2);
+  assert.ok(conVarios, 'hace falta una tarea con dos registros');
+  const orden = db.avances.filter(a => a.tareaId === conVarios.id)
+    .sort((x, y) => (x.fecha + (x.ts || '')) < (y.fecha + (y.ts || '')) ? 1 : -1);
+  const ultimo = orden[0], previo = orden[1];
+
+  await page.click(`[data-act="edit-avance"][data-id="${ultimo.id}"]`);
+  await page.waitForTimeout(220);
+  await page.click('[data-f="del"]');
+  await recargar();
+
+  const db2 = await leerDB(page);
+  assert.equal(db2.avances.find(a => a.id === ultimo.id), undefined);
+  assert.equal(db2.tareas.find(t => t.id === conVarios.id).avance, previo.avanceNuevo);
+  assert.deepEqual(ctx.errores, []);
 });

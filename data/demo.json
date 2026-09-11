@@ -7,13 +7,13 @@
    "cliente": "Cliente de ejemplo",
    "gerente": "Gerente de proyecto",
    "estado": "En curso",
-   "fechaInicio": "2026-07-12",
-   "fechaFin": "2026-11-24",
+   "fechaInicio": "2026-07-13",
+   "fechaFin": "2026-11-25",
    "avanceManual": 55,
    "notaAvance": "Datos de demostración. Reemplázalos por tu portafolio real.",
    "presupuestoCOP": 420000000,
    "descripcion": "Proyecto ficticio para conocer el tablero: fases, dependencias, entregables y costos.",
-   "id": "p-mq1hth7"
+   "id": "p-rdtgoj9"
   },
   {
    "nombre": "Plan de continuidad del ERP",
@@ -21,317 +21,317 @@
    "cliente": "Cliente de ejemplo",
    "gerente": "Gerente de proyecto",
    "estado": "En riesgo",
-   "fechaInicio": "2026-08-01",
-   "fechaFin": "2026-11-09",
+   "fechaInicio": "2026-08-02",
+   "fechaFin": "2026-11-10",
    "avanceManual": 35,
    "notaAvance": "Datos de demostración. La ventana de pruebas depende de disponibilidad del cliente.",
    "presupuestoCOP": 180000000,
    "descripcion": "Proyecto ficticio con una fase bloqueada, para ver los semáforos y las alertas.",
-   "id": "p-zy96oow"
+   "id": "p-mhh0w4f"
   }
  ],
  "fases": [
   {
-   "id": "f-khzb0pi",
-   "proyectoId": "p-mq1hth7",
+   "id": "f-grm7rer",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Requerimientos",
    "orden": 1,
-   "fechaInicio": "2026-07-12",
-   "fechaFin": "2026-08-11"
+   "fechaInicio": "2026-07-13",
+   "fechaFin": "2026-08-12"
   },
   {
-   "id": "f-irod741",
-   "proyectoId": "p-mq1hth7",
+   "id": "f-k0gx6f0",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Desarrollo",
    "orden": 2,
-   "fechaInicio": "2026-08-06",
-   "fechaFin": "2026-10-25"
+   "fechaInicio": "2026-08-07",
+   "fechaFin": "2026-10-26"
   },
   {
-   "id": "f-ldh0nuw",
-   "proyectoId": "p-mq1hth7",
+   "id": "f-hi0nf3e",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Despliegue",
    "orden": 3,
-   "fechaInicio": "2026-08-21",
-   "fechaFin": "2026-11-04"
+   "fechaInicio": "2026-08-22",
+   "fechaFin": "2026-11-05"
   },
   {
-   "id": "f-8dqnhsw",
-   "proyectoId": "p-mq1hth7",
+   "id": "f-eab33hr",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Estabilización",
    "orden": 4,
-   "fechaInicio": "2026-08-31",
-   "fechaFin": "2026-11-24"
+   "fechaInicio": "2026-09-01",
+   "fechaFin": "2026-11-25"
   },
   {
-   "id": "f-q6wksqt",
-   "proyectoId": "p-zy96oow",
+   "id": "f-u89i19n",
+   "proyectoId": "p-mhh0w4f",
    "nombre": "Levantamiento",
    "orden": 1,
-   "fechaInicio": "2026-08-01",
-   "fechaFin": "2026-08-26"
+   "fechaInicio": "2026-08-02",
+   "fechaFin": "2026-08-27"
   },
   {
-   "id": "f-gqnx66c",
-   "proyectoId": "p-zy96oow",
+   "id": "f-fhbxwbw",
+   "proyectoId": "p-mhh0w4f",
    "nombre": "Documentación",
    "orden": 2,
-   "fechaInicio": "2026-08-27",
-   "fechaFin": "2026-09-30"
+   "fechaInicio": "2026-08-28",
+   "fechaFin": "2026-10-01"
   },
   {
-   "id": "f-ld7i8ta",
-   "proyectoId": "p-zy96oow",
+   "id": "f-on7g2nr",
+   "proyectoId": "p-mhh0w4f",
    "nombre": "Pruebas",
    "orden": 3,
-   "fechaInicio": "2026-10-01",
-   "fechaFin": "2026-11-09"
+   "fechaInicio": "2026-10-02",
+   "fechaFin": "2026-11-10"
   }
  ],
  "tareas": [
   {
-   "id": "t-t5ldaqk",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-khzb0pi",
+   "id": "t-9hrhfp0",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-grm7rer",
    "nombre": "Levantamiento de requerimientos",
-   "responsableId": "r-4uilcpi",
-   "fechaInicio": "2026-07-14",
-   "fechaFin": "2026-08-01",
+   "responsableId": "r-xdoalq5",
+   "fechaInicio": "2026-07-15",
+   "fechaFin": "2026-08-02",
    "avance": 100,
    "estado": "Completada",
    "predecesorasIds": [],
    "esHito": false
   },
   {
-   "id": "t-enhzl0q",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-khzb0pi",
+   "id": "t-w6zevdq",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-grm7rer",
    "nombre": "Definición técnica de la solución",
-   "responsableId": "r-uae3uss",
-   "fechaInicio": "2026-07-27",
-   "fechaFin": "2026-08-09",
+   "responsableId": "r-9mh9yt6",
+   "fechaInicio": "2026-07-28",
+   "fechaFin": "2026-08-10",
    "avance": 100,
    "estado": "Completada",
    "predecesorasIds": [],
    "esHito": false
   },
   {
-   "id": "t-tc3hmcb",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-irod741",
+   "id": "t-f4o8ivq",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-k0gx6f0",
    "nombre": "Módulo de pagos",
-   "responsableId": "r-uae3uss",
-   "fechaInicio": "2026-08-06",
-   "fechaFin": "2026-08-25",
+   "responsableId": "r-9mh9yt6",
+   "fechaInicio": "2026-08-07",
+   "fechaFin": "2026-08-26",
    "avance": 100,
    "estado": "Completada",
    "predecesorasIds": [
-    "t-t5ldaqk"
+    "t-9hrhfp0"
    ],
    "esHito": false
   },
   {
-   "id": "t-su3oik0",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-ldh0nuw",
+   "id": "t-pyvs6s7",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-hi0nf3e",
    "nombre": "Configuración de red y certificados",
-   "responsableId": "r-pk17ou4",
-   "fechaInicio": "2026-08-27",
-   "fechaFin": "2026-08-31",
+   "responsableId": "r-6xu9x2q",
+   "fechaInicio": "2026-08-28",
+   "fechaFin": "2026-09-01",
    "avance": 100,
    "estado": "Completada",
    "predecesorasIds": [
-    "t-tc3hmcb"
+    "t-f4o8ivq"
    ],
    "esHito": false
   },
   {
-   "id": "t-4s5lw7h",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-ldh0nuw",
+   "id": "t-chfto1m",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-hi0nf3e",
    "nombre": "Ventana de cambio: paso a producción",
-   "responsableId": "r-pk17ou4",
-   "fechaInicio": "2026-09-02",
-   "fechaFin": "2026-09-02",
+   "responsableId": "r-6xu9x2q",
+   "fechaInicio": "2026-09-03",
+   "fechaFin": "2026-09-03",
    "avance": 100,
    "estado": "Completada",
    "predecesorasIds": [
-    "t-su3oik0"
+    "t-pyvs6s7"
    ],
    "esHito": true
   },
   {
-   "id": "t-0iret4j",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-irod741",
+   "id": "t-glsd4cy",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-k0gx6f0",
    "nombre": "Despliegue del micrositio",
-   "responsableId": "r-pk17ou4",
-   "fechaInicio": "2026-09-04",
-   "fechaFin": "2026-09-12",
+   "responsableId": "r-6xu9x2q",
+   "fechaInicio": "2026-09-05",
+   "fechaFin": "2026-09-13",
    "avance": 80,
    "estado": "En curso",
    "predecesorasIds": [
-    "t-enhzl0q"
+    "t-w6zevdq"
    ],
    "esHito": false
   },
   {
-   "id": "t-ncn2w7y",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-irod741",
+   "id": "t-w9b0h0z",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-k0gx6f0",
    "nombre": "Cotizador en línea",
-   "responsableId": "r-uae3uss",
-   "fechaInicio": "2026-09-13",
-   "fechaFin": "2026-10-25",
+   "responsableId": "r-9mh9yt6",
+   "fechaInicio": "2026-09-14",
+   "fechaFin": "2026-10-26",
    "avance": 10,
    "estado": "En curso",
    "predecesorasIds": [
-    "t-0iret4j"
+    "t-glsd4cy"
    ],
    "esHito": false
   },
   {
-   "id": "t-tzkhq3h",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-irod741",
+   "id": "t-vgooje6",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-k0gx6f0",
    "nombre": "Accesibilidad del portal",
-   "responsableId": "r-uae3uss",
-   "fechaInicio": "2026-09-06",
-   "fechaFin": "2026-10-05",
+   "responsableId": "r-9mh9yt6",
+   "fechaInicio": "2026-09-07",
+   "fechaFin": "2026-10-06",
    "avance": 35,
    "estado": "En curso",
    "predecesorasIds": [
-    "t-t5ldaqk"
+    "t-9hrhfp0"
    ],
    "esHito": false
   },
   {
-   "id": "t-k3lqpl5",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-ldh0nuw",
+   "id": "t-ko2wz4h",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-hi0nf3e",
    "nombre": "Ventana de cambio: salida del cotizador",
-   "responsableId": "r-pk17ou4",
-   "fechaInicio": "2026-11-01",
-   "fechaFin": "2026-11-01",
+   "responsableId": "r-6xu9x2q",
+   "fechaInicio": "2026-11-02",
+   "fechaFin": "2026-11-02",
    "avance": 0,
    "estado": "Pendiente",
    "predecesorasIds": [
-    "t-ncn2w7y"
+    "t-w9b0h0z"
    ],
    "esHito": true
   },
   {
-   "id": "t-pye1egv",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-8dqnhsw",
+   "id": "t-p6ql058",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-eab33hr",
    "nombre": "Pruebas de humo y monitoreo",
-   "responsableId": "r-9wriird",
-   "fechaInicio": "2026-11-02",
-   "fechaFin": "2026-11-09",
+   "responsableId": "r-lnufwqg",
+   "fechaInicio": "2026-11-03",
+   "fechaFin": "2026-11-10",
    "avance": 0,
    "estado": "Pendiente",
    "predecesorasIds": [
-    "t-k3lqpl5"
+    "t-ko2wz4h"
    ],
    "esHito": false
   },
   {
-   "id": "t-s20ase4",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-q6wksqt",
+   "id": "t-pyn4hkz",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-u89i19n",
    "nombre": "Alineación del alcance",
-   "responsableId": "r-4uilcpi",
-   "fechaInicio": "2026-08-01",
-   "fechaFin": "2026-08-13",
+   "responsableId": "r-xdoalq5",
+   "fechaInicio": "2026-08-02",
+   "fechaFin": "2026-08-14",
    "avance": 100,
    "estado": "Completada",
    "predecesorasIds": [],
    "esHito": false
   },
   {
-   "id": "t-myec5r8",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-gqnx66c",
+   "id": "t-7y5uq8r",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-fhbxwbw",
    "nombre": "Redacción del plan",
-   "responsableId": "r-4uilcpi",
-   "fechaInicio": "2026-08-27",
-   "fechaFin": "2026-09-22",
+   "responsableId": "r-xdoalq5",
+   "fechaInicio": "2026-08-28",
+   "fechaFin": "2026-09-23",
    "avance": 60,
    "estado": "En curso",
    "predecesorasIds": [
-    "t-s20ase4"
+    "t-pyn4hkz"
    ],
    "esHito": false
   },
   {
-   "id": "t-3fsen5z",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-gqnx66c",
+   "id": "t-uryj081",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-fhbxwbw",
    "nombre": "Matriz de procesos críticos",
-   "responsableId": "r-4uilcpi",
-   "fechaInicio": "2026-09-02",
-   "fechaFin": "2026-09-28",
+   "responsableId": "r-xdoalq5",
+   "fechaInicio": "2026-09-03",
+   "fechaFin": "2026-09-29",
    "avance": 40,
    "estado": "En curso",
    "predecesorasIds": [
-    "t-s20ase4"
+    "t-pyn4hkz"
    ],
    "esHito": false
   },
   {
-   "id": "t-8d2nl6c",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-gqnx66c",
+   "id": "t-g9cmqka",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-fhbxwbw",
    "nombre": "Definición de RTO y RPO",
-   "responsableId": "r-pk17ou4",
-   "fechaInicio": "2026-09-07",
-   "fechaFin": "2026-09-19",
+   "responsableId": "r-6xu9x2q",
+   "fechaInicio": "2026-09-08",
+   "fechaFin": "2026-09-20",
    "avance": 25,
    "estado": "Bloqueada",
    "predecesorasIds": [
-    "t-s20ase4"
+    "t-pyn4hkz"
    ],
    "esHito": false
   },
   {
-   "id": "t-pfk67w1",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-ld7i8ta",
+   "id": "t-8qy0vrs",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-on7g2nr",
    "nombre": "Simulacro de recuperación",
-   "responsableId": "r-pk17ou4",
-   "fechaInicio": "2026-10-04",
-   "fechaFin": "2026-10-04",
+   "responsableId": "r-6xu9x2q",
+   "fechaInicio": "2026-10-05",
+   "fechaFin": "2026-10-05",
    "avance": 0,
    "estado": "Pendiente",
    "predecesorasIds": [
-    "t-myec5r8"
+    "t-7y5uq8r"
    ],
    "esHito": true
   },
   {
-   "id": "t-65d7wne",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-ld7i8ta",
+   "id": "t-d9aiabj",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-on7g2nr",
    "nombre": "Informe de resultados",
-   "responsableId": "r-9wriird",
-   "fechaInicio": "2026-10-05",
-   "fechaFin": "2026-10-25",
+   "responsableId": "r-lnufwqg",
+   "fechaInicio": "2026-10-06",
+   "fechaFin": "2026-10-26",
    "avance": 0,
    "estado": "Pendiente",
    "predecesorasIds": [
-    "t-pfk67w1"
+    "t-8qy0vrs"
    ],
    "esHito": false
   }
  ],
  "entregables": [
   {
-   "id": "e-h15b47q",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-khzb0pi",
+   "id": "e-fpwe1we",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-grm7rer",
    "nombre": "Documento de requerimientos",
-   "responsableId": "r-4uilcpi",
-   "fechaComprometida": "2026-08-03",
+   "responsableId": "r-xdoalq5",
+   "fechaComprometida": "2026-08-04",
    "estado": "Aprobado",
    "avance": 100,
    "descripcion": "Alcance funcional acordado con el cliente.",
@@ -339,12 +339,12 @@
    "observaciones": ""
   },
   {
-   "id": "e-5le2rbi",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-irod741",
+   "id": "e-xjm41k6",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-k0gx6f0",
    "nombre": "Cotizador en producción",
-   "responsableId": "r-uae3uss",
-   "fechaComprometida": "2026-11-01",
+   "responsableId": "r-9mh9yt6",
+   "fechaComprometida": "2026-11-02",
    "estado": "Pendiente",
    "avance": 56,
    "descripcion": "Hito comercial del trimestre.",
@@ -352,12 +352,12 @@
    "observaciones": ""
   },
   {
-   "id": "e-ua1a8rn",
-   "proyectoId": "p-mq1hth7",
-   "faseId": "f-ldh0nuw",
+   "id": "e-h8d2srw",
+   "proyectoId": "p-rdtgoj9",
+   "faseId": "f-hi0nf3e",
    "nombre": "Informe de la ventana de cambio",
-   "responsableId": "r-pk17ou4",
-   "fechaComprometida": "2026-09-15",
+   "responsableId": "r-6xu9x2q",
+   "fechaComprometida": "2026-09-16",
    "estado": "Entregado",
    "avance": 67,
    "descripcion": "Bitácora del despliegue y plan de reversión.",
@@ -365,12 +365,12 @@
    "observaciones": ""
   },
   {
-   "id": "e-7695153",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-gqnx66c",
+   "id": "e-5irnef3",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-fhbxwbw",
    "nombre": "Plan de continuidad del negocio",
-   "responsableId": "r-4uilcpi",
-   "fechaComprometida": "2026-09-22",
+   "responsableId": "r-xdoalq5",
+   "fechaComprometida": "2026-09-23",
    "estado": "En curso",
    "avance": 42,
    "descripcion": "Versión 1 en revisión interna.",
@@ -378,12 +378,12 @@
    "observaciones": ""
   },
   {
-   "id": "e-kczgxjv",
-   "proyectoId": "p-zy96oow",
-   "faseId": "f-ld7i8ta",
+   "id": "e-1pdoeuc",
+   "proyectoId": "p-mhh0w4f",
+   "faseId": "f-on7g2nr",
    "nombre": "Informe de pruebas de continuidad",
-   "responsableId": "r-9wriird",
-   "fechaComprometida": "2026-10-25",
+   "responsableId": "r-lnufwqg",
+   "fechaComprometida": "2026-10-26",
    "estado": "Pendiente",
    "avance": 0,
    "descripcion": "Resultados del simulacro y acciones correctivas.",
@@ -393,35 +393,35 @@
  ],
  "recursos": [
   {
-   "id": "r-1lvnh47",
+   "id": "r-4lfoy0s",
    "nombre": "Gerente de proyecto",
    "rol": "Gerencia",
    "area": "Interno",
    "costoHoraCOP": 95000
   },
   {
-   "id": "r-4uilcpi",
+   "id": "r-xdoalq5",
    "nombre": "Líder funcional",
    "rol": "Análisis",
    "area": "Interno",
    "costoHoraCOP": 85000
   },
   {
-   "id": "r-uae3uss",
+   "id": "r-9mh9yt6",
    "nombre": "Desarrollador senior",
    "rol": "Desarrollo",
    "area": "Interno",
    "costoHoraCOP": 78000
   },
   {
-   "id": "r-pk17ou4",
+   "id": "r-6xu9x2q",
    "nombre": "Ingeniero de infraestructura",
    "rol": "DevOps",
    "area": "Interno",
    "costoHoraCOP": 82000
   },
   {
-   "id": "r-9wriird",
+   "id": "r-lnufwqg",
    "nombre": "Analista de calidad",
    "rol": "QA",
    "area": "Interno",
@@ -430,81 +430,81 @@
  ],
  "asignaciones": [
   {
-   "id": "a-8bmfbr5",
-   "recursoId": "r-1lvnh47",
-   "proyectoId": "p-mq1hth7",
+   "id": "a-wlsyvgw",
+   "recursoId": "r-4lfoy0s",
+   "proyectoId": "p-rdtgoj9",
    "porcentajeAsignacion": 30,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-svkvlxt",
-   "recursoId": "r-4uilcpi",
-   "proyectoId": "p-mq1hth7",
+   "id": "a-3h6h30a",
+   "recursoId": "r-xdoalq5",
+   "proyectoId": "p-rdtgoj9",
    "porcentajeAsignacion": 40,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-tuhc86c",
-   "recursoId": "r-uae3uss",
-   "proyectoId": "p-mq1hth7",
+   "id": "a-bdm8342",
+   "recursoId": "r-9mh9yt6",
+   "proyectoId": "p-rdtgoj9",
    "porcentajeAsignacion": 80,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-vudwp9b",
-   "recursoId": "r-pk17ou4",
-   "proyectoId": "p-mq1hth7",
+   "id": "a-9u4919h",
+   "recursoId": "r-6xu9x2q",
+   "proyectoId": "p-rdtgoj9",
    "porcentajeAsignacion": 50,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-jrc3xcq",
-   "recursoId": "r-9wriird",
-   "proyectoId": "p-mq1hth7",
+   "id": "a-dpw00t6",
+   "recursoId": "r-lnufwqg",
+   "proyectoId": "p-rdtgoj9",
    "porcentajeAsignacion": 40,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-u8a6gr4",
-   "recursoId": "r-1lvnh47",
-   "proyectoId": "p-zy96oow",
+   "id": "a-y99n9sp",
+   "recursoId": "r-4lfoy0s",
+   "proyectoId": "p-mhh0w4f",
    "porcentajeAsignacion": 25,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-0px1c4w",
-   "recursoId": "r-4uilcpi",
-   "proyectoId": "p-zy96oow",
+   "id": "a-0ivosm4",
+   "recursoId": "r-xdoalq5",
+   "proyectoId": "p-mhh0w4f",
    "porcentajeAsignacion": 40,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-xp6e6lh",
-   "recursoId": "r-uae3uss",
-   "proyectoId": "p-zy96oow",
+   "id": "a-rcjyzoc",
+   "recursoId": "r-9mh9yt6",
+   "proyectoId": "p-mhh0w4f",
    "porcentajeAsignacion": 20,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-26yo79c",
-   "recursoId": "r-pk17ou4",
-   "proyectoId": "p-zy96oow",
+   "id": "a-qd7ql93",
+   "recursoId": "r-6xu9x2q",
+   "proyectoId": "p-mhh0w4f",
    "porcentajeAsignacion": 25,
    "fechaDesde": "",
    "fechaHasta": ""
   },
   {
-   "id": "a-i4pdr43",
-   "recursoId": "r-9wriird",
-   "proyectoId": "p-zy96oow",
+   "id": "a-z909g34",
+   "recursoId": "r-lnufwqg",
+   "proyectoId": "p-mhh0w4f",
    "porcentajeAsignacion": 30,
    "fechaDesde": "",
    "fechaHasta": ""
@@ -512,64 +512,64 @@
  ],
  "costos": [
   {
-   "id": "c-cqwamgf",
-   "proyectoId": "p-mq1hth7",
+   "id": "c-qxs3h6s",
+   "proyectoId": "p-rdtgoj9",
    "concepto": "Equipo de desarrollo — mes en curso",
    "tipo": "Personal",
    "montoCOP": 48000000,
-   "fecha": "2026-09-05",
+   "fecha": "2026-09-06",
    "estado": "Ejecutado"
   },
   {
-   "id": "c-iyiybxr",
-   "proyectoId": "p-mq1hth7",
+   "id": "c-sw1m2td",
+   "proyectoId": "p-rdtgoj9",
    "concepto": "Equipo de desarrollo — mes anterior",
    "tipo": "Personal",
    "montoCOP": 46000000,
-   "fecha": "2026-08-06",
+   "fecha": "2026-08-07",
    "estado": "Ejecutado"
   },
   {
-   "id": "c-jiout66",
-   "proyectoId": "p-mq1hth7",
+   "id": "c-db2owts",
+   "proyectoId": "p-rdtgoj9",
    "concepto": "Licencias",
    "tipo": "Licencia",
    "montoCOP": 9800000,
-   "fecha": "2026-08-21",
+   "fecha": "2026-08-22",
    "estado": "Ejecutado"
   },
   {
-   "id": "c-7t75a60",
-   "proyectoId": "p-mq1hth7",
+   "id": "c-ysnoq2q",
+   "proyectoId": "p-rdtgoj9",
    "concepto": "Infraestructura en nube",
    "tipo": "Infraestructura",
    "montoCOP": 6200000,
-   "fecha": "2026-09-11",
+   "fecha": "2026-09-12",
    "estado": "Planeado"
   },
   {
-   "id": "c-qc46j1q",
-   "proyectoId": "p-zy96oow",
+   "id": "c-v04cdze",
+   "proyectoId": "p-mhh0w4f",
    "concepto": "Equipo funcional — mes en curso",
    "tipo": "Personal",
    "montoCOP": 19500000,
-   "fecha": "2026-09-05",
+   "fecha": "2026-09-06",
    "estado": "Ejecutado"
   },
   {
-   "id": "c-07pbpep",
-   "proyectoId": "p-zy96oow",
+   "id": "c-qbewl2o",
+   "proyectoId": "p-mhh0w4f",
    "concepto": "Consultoría externa",
    "tipo": "Proveedor",
    "montoCOP": 24000000,
-   "fecha": "2026-09-30",
+   "fecha": "2026-10-01",
    "estado": "Planeado"
   }
  ],
  "riesgos": [
   {
-   "id": "g-wfodhy3",
-   "proyectoId": "p-mq1hth7",
+   "id": "g-7zksh1s",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Disponibilidad del ambiente de pruebas",
    "categoria": "Infraestructura",
    "probabilidad": "Media",
@@ -579,8 +579,8 @@
    "planContingencia": "Ambiente alterno y ventana de contingencia acordada."
   },
   {
-   "id": "g-h12p3o7",
-   "proyectoId": "p-zy96oow",
+   "id": "g-op2u5cm",
+   "proyectoId": "p-mhh0w4f",
    "nombre": "Disponibilidad de los interesados",
    "categoria": "Stakeholders",
    "probabilidad": "Alta",
@@ -593,8 +593,8 @@
  "alcance": [],
  "interesados": [
   {
-   "id": "in-ff70kx0",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-kqgthu7",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Patrocinador del proyecto",
    "rol": "Autoriza, financia y desbloquea",
    "organizacion": "Dirección",
@@ -608,8 +608,8 @@
    "estrategia": "Informe semanal y comité mensual; escalamiento directo cuando se materialice un riesgo alto."
   },
   {
-   "id": "in-x5wrhhi",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-8tpw7ka",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Comité de arquitectura",
    "rol": "Aprueba decisiones arquitectónicas",
    "organizacion": "Gobernanza TI",
@@ -623,8 +623,8 @@
    "estrategia": "Comité mensual con presentación previa; nada se aprueba sin ADR registrado."
   },
   {
-   "id": "in-zynnqd3",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-prey900",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Líder de arquitectura empresarial",
    "rol": "Conduce el trabajo técnico del AS-IS",
    "organizacion": "Equipo ejecutor",
@@ -638,8 +638,8 @@
    "estrategia": "Seguimiento semanal y validación de cada artefacto; define prioridades cuando hay conflicto de asignación."
   },
   {
-   "id": "in-wwc066v",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-1lb39r3",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Gerencia de TI",
    "rol": "Operación de la plataforma ERP",
    "organizacion": "Cliente",
@@ -653,8 +653,8 @@
    "estrategia": "Informe de avance y participación puntual en Technology Architecture."
   },
   {
-   "id": "in-uo00pid",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-071zuzm",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Seguridad de la información",
    "rol": "Controles, compliance y auditoría",
    "organizacion": "Cliente",
@@ -668,8 +668,8 @@
    "estrategia": "Involucrar en Security Architecture y en la revisión de integraciones; consultar antes de decisiones que toquen datos."
   },
   {
-   "id": "in-giwsuq5",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-9n5538l",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Dueños de proceso ERP",
    "rol": "Validan la arquitectura de negocio y procesos",
    "organizacion": "Cliente",
@@ -683,8 +683,8 @@
    "estrategia": "Talleres por dominio funcional y validación del mapeo de procesos; son la fuente de verdad del AS-IS."
   },
   {
-   "id": "in-5xjf1h8",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-67v8psr",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Equipo de arquitectura y análisis",
    "rol": "Elabora los artefactos",
    "organizacion": "Equipo ejecutor",
@@ -698,8 +698,8 @@
    "estrategia": "Coordinación diaria y seguimiento semanal; espacio abierto para levantar impedimentos."
   },
   {
-   "id": "in-muvcm0f",
-   "proyectoId": "p-mq1hth7",
+   "id": "in-1ikc8hz",
+   "proyectoId": "p-rdtgoj9",
    "nombre": "Proveedor y comunidad Odoo (OCA)",
    "rol": "Componentes de terceros y comunitarios",
    "organizacion": "Externo",
@@ -715,8 +715,8 @@
  ],
  "comunicaciones": [
   {
-   "id": "cm-3bcuzyd",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-lxrms2k",
+   "proyectoId": "p-rdtgoj9",
    "que": "Reunión de kickoff",
    "porQue": "Dar inicio oficial, alinear objetivo, alcance y reglas de juego.",
    "destinatarios": "Todos los interesados",
@@ -725,14 +725,14 @@
    "responsablePrep": "Gerente del Proyecto",
    "aprueba": "Gerente del Proyecto",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Presentación de arranque",
    "repositorio": "Repositorio del proyecto",
    "estado": "Activa"
   },
   {
-   "id": "cm-13e3put",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-f6fsi93",
+   "proyectoId": "p-rdtgoj9",
    "que": "Coordinación diaria del equipo",
    "porQue": "Desbloquear pendientes y sincronizar el trabajo del día.",
    "destinatarios": "Equipo de arquitectura",
@@ -741,14 +741,14 @@
    "responsablePrep": "Todos",
    "aprueba": "N/A",
    "envia": "Todos",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "",
    "repositorio": "Historial del espacio",
    "estado": "Activa"
   },
   {
-   "id": "cm-b8bovyc",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-8ddd2z1",
+   "proyectoId": "p-rdtgoj9",
    "que": "Reunión de seguimiento",
    "porQue": "Revisar avances, bloqueos y próximos pasos contra el cronograma.",
    "destinatarios": "Equipo y líder de arquitectura",
@@ -757,14 +757,14 @@
    "responsablePrep": "Gerente del Proyecto",
    "aprueba": "Gerente del Proyecto",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Acta de reunión",
    "repositorio": "Repositorio del proyecto",
    "estado": "Activa"
   },
   {
-   "id": "cm-q9kf5ha",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-96t7db0",
+   "proyectoId": "p-rdtgoj9",
    "que": "Informe de avance",
    "porQue": "Informar estado, avance por artefacto, riesgos y desviaciones.",
    "destinatarios": "Patrocinador e interesados clave",
@@ -773,14 +773,14 @@
    "responsablePrep": "Gerente del Proyecto",
    "aprueba": "Gerente del Proyecto",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Informe de seguimiento",
    "repositorio": "Repositorio del proyecto",
    "estado": "Activa"
   },
   {
-   "id": "cm-yczgjc2",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-eimtz0k",
+   "proyectoId": "p-rdtgoj9",
    "que": "Comité de arquitectura",
    "porQue": "Presentar y aprobar decisiones arquitectónicas y registrarlas en el ADR.",
    "destinatarios": "Comité de arquitectura y patrocinador",
@@ -789,14 +789,14 @@
    "responsablePrep": "Líder de Arquitectura",
    "aprueba": "Comité de Arquitectura",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Presentación + ADR",
    "repositorio": "Architecture Decision Log",
    "estado": "Activa"
   },
   {
-   "id": "cm-dseb16t",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-t0a0mrs",
+   "proyectoId": "p-rdtgoj9",
    "que": "Validación de artefacto TOGAF",
    "porQue": "Verificar que el artefacto cumple los criterios antes de darlo por entregado.",
    "destinatarios": "Líder de arquitectura y dueños de proceso",
@@ -805,14 +805,14 @@
    "responsablePrep": "Líder de Arquitectura",
    "aprueba": "Comité de Arquitectura",
    "envia": "Líder de Arquitectura",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Acta de aceptación",
    "repositorio": "Repositorio arquitectónico",
    "estado": "Activa"
   },
   {
-   "id": "cm-3xj1l5l",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-wpk7bqn",
+   "proyectoId": "p-rdtgoj9",
    "que": "Solicitudes de cambio de alcance",
    "porQue": "Registrar, evaluar y decidir sobre cambios al alcance acordado.",
    "destinatarios": "Patrocinador y comité de arquitectura",
@@ -821,14 +821,14 @@
    "responsablePrep": "Gerente del Proyecto",
    "aprueba": "Comité de Arquitectura",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Formato de solicitud de cambio",
    "repositorio": "Control de cambios",
    "estado": "Activa"
   },
   {
-   "id": "cm-shdsrsm",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-llsj9rh",
+   "proyectoId": "p-rdtgoj9",
    "que": "Escalamiento de riesgos e impedimentos",
    "porQue": "Activar el plan de contingencia y tomar decisiones que el equipo no puede tomar.",
    "destinatarios": "Patrocinador",
@@ -837,14 +837,14 @@
    "responsablePrep": "Gerente del Proyecto",
    "aprueba": "Gerente del Proyecto",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Nota de escalamiento",
    "repositorio": "Registro de riesgos",
    "estado": "Activa"
   },
   {
-   "id": "cm-c2h7e4i",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-3o5kuwh",
+   "proyectoId": "p-rdtgoj9",
    "que": "Tablero de seguimiento",
    "porQue": "Dar visibilidad permanente del avance, entregables y riesgos.",
    "destinatarios": "Todos los interesados",
@@ -853,14 +853,14 @@
    "responsablePrep": "Gerente del Proyecto",
    "aprueba": "Gerente del Proyecto",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-07-12",
+   "fechaInicio": "2026-07-13",
    "formato": "Control de Portafolio",
    "repositorio": "Enlace del tablero",
    "estado": "Activa"
   },
   {
-   "id": "cm-39yrjfz",
-   "proyectoId": "p-mq1hth7",
+   "id": "cm-cl7btx0",
+   "proyectoId": "p-rdtgoj9",
    "que": "Reunión de cierre y lecciones aprendidas",
    "porQue": "Presentar resultados y capitalizar los aprendizajes del ciclo.",
    "destinatarios": "Todos los interesados y patrocinador",
@@ -869,10 +869,132 @@
    "responsablePrep": "Gerente del Proyecto",
    "aprueba": "Gerente del Proyecto",
    "envia": "Gerente del Proyecto",
-   "fechaInicio": "2026-11-24",
+   "fechaInicio": "2026-11-25",
    "formato": "Informe de cierre",
    "repositorio": "Repositorio del proyecto",
    "estado": "Activa"
+  }
+ ],
+ "avances": [
+  {
+   "id": "av-bduwyee",
+   "proyectoId": "p-rdtgoj9",
+   "tareaId": "t-w9b0h0z",
+   "fecha": "2026-09-03",
+   "ts": "",
+   "avanceAnterior": 0,
+   "avanceNuevo": 5,
+   "delta": 5,
+   "nota": "Arranque: modelo de datos y esqueleto del formulario.",
+   "autor": "Desarrollador senior"
+  },
+  {
+   "id": "av-qkqoqye",
+   "proyectoId": "p-rdtgoj9",
+   "tareaId": "t-w9b0h0z",
+   "fecha": "2026-09-10",
+   "ts": "",
+   "avanceAnterior": 5,
+   "avanceNuevo": 10,
+   "delta": 5,
+   "nota": "Integración con el catálogo de productos; falta el cálculo de tarifas.",
+   "autor": "Desarrollador senior"
+  },
+  {
+   "id": "av-5ogbt4h",
+   "proyectoId": "p-rdtgoj9",
+   "tareaId": "t-vgooje6",
+   "fecha": "2026-08-20",
+   "ts": "",
+   "avanceAnterior": 0,
+   "avanceNuevo": 15,
+   "delta": 15,
+   "nota": "Auditoría inicial: 42 hallazgos clasificados por severidad.",
+   "autor": "Desarrollador senior"
+  },
+  {
+   "id": "av-74270rm",
+   "proyectoId": "p-rdtgoj9",
+   "tareaId": "t-vgooje6",
+   "fecha": "2026-08-27",
+   "ts": "",
+   "avanceAnterior": 15,
+   "avanceNuevo": 25,
+   "delta": 10,
+   "nota": "Corregidos los de contraste y foco de teclado.",
+   "autor": "Desarrollador senior"
+  },
+  {
+   "id": "av-0qrv5sw",
+   "proyectoId": "p-rdtgoj9",
+   "tareaId": "t-vgooje6",
+   "fecha": "2026-09-10",
+   "ts": "",
+   "avanceAnterior": 25,
+   "avanceNuevo": 35,
+   "delta": 10,
+   "nota": "Formularios con etiquetas y mensajes de error accesibles.",
+   "autor": "Desarrollador senior"
+  },
+  {
+   "id": "av-mj9mkk3",
+   "proyectoId": "p-rdtgoj9",
+   "tareaId": "t-glsd4cy",
+   "fecha": "2026-08-27",
+   "ts": "",
+   "avanceAnterior": 0,
+   "avanceNuevo": 50,
+   "delta": 50,
+   "nota": "Infraestructura aprovisionada y dominio configurado.",
+   "autor": "Ingeniero de infraestructura"
+  },
+  {
+   "id": "av-iuqik0g",
+   "proyectoId": "p-rdtgoj9",
+   "tareaId": "t-glsd4cy",
+   "fecha": "2026-09-10",
+   "ts": "",
+   "avanceAnterior": 50,
+   "avanceNuevo": 80,
+   "delta": 30,
+   "nota": "Despliegue en ambiente de pruebas; pendiente el certificado de producción.",
+   "autor": "Ingeniero de infraestructura"
+  },
+  {
+   "id": "av-ii5h9gz",
+   "proyectoId": "p-mhh0w4f",
+   "tareaId": "t-7y5uq8r",
+   "fecha": "2026-08-27",
+   "ts": "",
+   "avanceAnterior": 0,
+   "avanceNuevo": 40,
+   "delta": 40,
+   "nota": "Procesos críticos levantados con las áreas.",
+   "autor": "Líder funcional"
+  },
+  {
+   "id": "av-zxtsmbh",
+   "proyectoId": "p-mhh0w4f",
+   "tareaId": "t-7y5uq8r",
+   "fecha": "2026-09-03",
+   "ts": "",
+   "avanceAnterior": 40,
+   "avanceNuevo": 60,
+   "delta": 20,
+   "nota": "Redactadas las estrategias de recuperación.",
+   "autor": "Líder funcional"
+  },
+  {
+   "id": "av-jxu3o4u",
+   "proyectoId": "p-mhh0w4f",
+   "tareaId": "t-7y5uq8r",
+   "fecha": "2026-09-10",
+   "ts": "",
+   "avanceAnterior": 60,
+   "avanceNuevo": 60,
+   "delta": 0,
+   "nota": "Sin avance esta semana: pendiente la validación del cliente.",
+   "autor": "Líder funcional"
   }
  ]
 }

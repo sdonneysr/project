@@ -21,9 +21,9 @@ const DATA = arg('--data', null);
 const TITULO = 'Control de Portafolio';
 const FUENTES = 'https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap';
 
-const VACIO = { v: 3, proyectos: [], fases: [], tareas: [], entregables: [],
+const VACIO = { v: 4, proyectos: [], fases: [], tareas: [], entregables: [],
   recursos: [], asignaciones: [], costos: [], riesgos: [], alcance: [],
-  interesados: [], comunicaciones: [] };
+  interesados: [], comunicaciones: [], avances: [] };
 
 const COLECCIONES = Object.keys(VACIO).filter(k => k !== 'v');
 
