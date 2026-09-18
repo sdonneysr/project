@@ -566,7 +566,7 @@ document.addEventListener('submit', function(ev){
   supaError = ''; supaCargando = true; render();
   supa.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
     supaCargando = false;
-    if(r.error){ supaError = 'Correo o contraseña incorrectos.'; render(); return; }
+    if(r.error){ supaError = r.error.message || 'Correo o contraseña incorrectos.'; render(); return; }
   });
 });
 
