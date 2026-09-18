@@ -91,6 +91,16 @@ tests/                  pruebas de extremo a extremo
 docs/                   modelo de datos, decisiones de arquitectura, base PMBOK
 ```
 
+## Integración continua
+
+`.github/workflows/ci.yml` corre `npm run check`, el build y las 14 pruebas en cada push a `main`
+y en cada pull request, y guarda los PDF que generan las pruebas como artefacto del run.
+
+`.github/workflows/pages.yml` publica en GitHub Pages una versión de **demostración**, y solo
+cuando se lanza a mano. Construye a propósito con `data/demo.json`: Pages es público, y lo que
+esta herramienta contiene no lo es. La copia publicada además es de solo lectura — fuera de la
+plataforma de Artifacts no existe `claude.use()`, así que la página se rinde en modo consulta.
+
 ## Datos y privacidad
 
 **Este repositorio no contiene datos reales.** La plantilla trae la base vacía y `data/demo.json`

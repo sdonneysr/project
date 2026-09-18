@@ -1,0 +1,57 @@
+# Publica en GitHub Pages una version de DEMOSTRACION del tablero.
+#
+# Ojo con esto antes de activarlo: GitHub Pages es publico. Este flujo construye
+# a proposito con data/demo.json, que es un portafolio ficticio. NO lo apuntes a
+# data/private/ : el tablero incluye el registro de riesgos, el presupuesto y la
+# valoracion de poder, interes y postura de cada interesado.
+#
+# La version publicada es de SOLO LECTURA: fuera de la plataforma de Artifacts
+# no existe claude.use(), asi que la pagina se rinde en modo consulta y nadie
+# puede guardar nada. El PDF tampoco sale, porque depende de esa capacidad.
+#
+# Para activarlo: Settings -> Pages -> Source: GitHub Actions. Si no lo quieres,
+# borra este archivo.
+
+name: Pages (demostracion)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run check
+      - run: npm run build:demo
+      - name: Preparar el sitio
+        run: |
+          mkdir -p _site
+          cp dist/standalone.html _site/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
