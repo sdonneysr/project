@@ -50,11 +50,21 @@ async function main() {
   }
   const db = normaliza(datos);
 
-  const contenido = plantilla.replace(
+  let contenido = plantilla.replace(
     /<script type="application\/json" id="db">[\s\S]*?<\/script>/,
     `<script type="application/json" id="db">${escapaJSON(db)}</script>`
   );
   if (contenido === plantilla && DATA) throw new Error('No se encontro el bloque <script id="db"> en la plantilla.');
+
+  const supaUrl = process.env.SUPABASE_URL;
+  const supaAnonKey = process.env.SUPABASE_ANON_KEY;
+  if (supaUrl && supaAnonKey) {
+    const supaCfg = JSON.stringify({ url: supaUrl, anonKey: supaAnonKey }).replace(/</g, '\\u003c');
+    contenido = contenido.replace(
+      /<script type="application\/json" id="supabase-config">[\s\S]*?<\/script>/,
+      `<script type="application/json" id="supabase-config">${supaCfg}</script>`
+    );
+  }
 
   const completo =
     '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n' +

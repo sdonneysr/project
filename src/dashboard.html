@@ -205,6 +205,10 @@ td.c,th.c{text-align:center}
 .modal-b .full{grid-column:1/-1}
 .modal-f{padding:14px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
 .err{color:var(--risk);font-size:13px;margin-right:auto;align-self:center}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-wrap .card{width:100%;max-width:360px;padding:28px 26px;display:flex;flex-direction:column;gap:16px}
+.login-wrap h1{font-size:18px;margin:0}
+.login-wrap form{display:flex;flex-direction:column;gap:12px}
 .chkline{display:flex;align-items:center;gap:8px;font-size:14px}
 .multi{border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:8px;max-height:130px;overflow:auto;display:flex;flex-direction:column;gap:5px;background:var(--surface)}
 
@@ -243,6 +247,7 @@ td.c,th.c{text-align:center}
 </style>
 <div id="root" aria-busy="true"></div>
 <script type="application/json" id="db">{"v":3,"proyectos":[],"fases":[],"tareas":[],"entregables":[],"recursos":[],"asignaciones":[],"costos":[],"riesgos":[],"alcance":[],"interesados":[],"comunicaciones":[]}</script>
+<script type="application/json" id="supabase-config">null</script>
 <script id="app">
 (function(){
 "use strict";
@@ -251,6 +256,7 @@ var DB = JSON.parse(document.getElementById('db').textContent);
 ['proyectos','fases','tareas','entregables','recursos','asignaciones','costos','riesgos','alcance','interesados','comunicaciones','avances'].forEach(function(k){ if(!Array.isArray(DB[k])) DB[k]=[]; });
 var root = document.getElementById('root');
 var readOnly = false, saving = false, artifactNS = null, downloadsNS = null;
+var modoSupa = false, supa = null, supaUser = null, supaCargando = false, supaError = '';
 var UI = {tab:'resumen', proy:'*', zoom:'semana', eEstado:'*', eResp:'*', tFase:'*', tEstado:'*', rEstado:'*', bTarea:'*', bPeriodo:'8'};
 try{ var s = sessionStorage.getItem('cp_ui'); if(s) UI = Object.assign(UI, JSON.parse(s)); }catch(e){}
 function saveUI(){ try{ sessionStorage.setItem('cp_ui', JSON.stringify(UI)); }catch(e){} }
@@ -473,6 +479,17 @@ function guardar(msg){
   timer = setTimeout(hacerGuardado, 400); /* agrupa cambios rapidos en una sola publicacion */
 }
 function hacerGuardado(){
+  if(modoSupa){
+    if(!supa || !supaUser){ saving=false; render(); toast('No hay sesión activa.'); return; }
+    saveUI();
+    supa.from('tablero_datos').update({ data: DB, updated_at: new Date().toISOString(), updated_by: supaUser.id }).eq('id', 1)
+      .then(function(r){
+        saving=false;
+        if(r.error){ toast('No se pudo guardar. Vuelve a intentarlo.', 4000); render(); return; }
+        render();
+      });
+    return;
+  }
   if(!artifactNS){ saving=false; render(); toast('Guardado no disponible en esta vista.'); return; }
   saveUI();
   artifactNS.publish(buildDoc()).then(function(){
@@ -489,6 +506,69 @@ function hacerGuardado(){
     toast('No se pudo guardar. Vuelve a intentarlo.', 4000); render();
   });
 }
+
+/* ============================ SUPABASE (despliegue standalone) ============================ */
+function cfgSupabase(){
+  try{ return JSON.parse(document.getElementById('supabase-config').textContent); }catch(e){ return null; }
+}
+function cargarScript(src, cb){
+  var s = document.createElement('script');
+  s.src = src;
+  s.onload = cb;
+  s.onerror = function(){ supaError = 'No se pudo cargar la librería de conexión.'; render(); };
+  document.head.appendChild(s);
+}
+function cargarDesdeSupabase(){
+  supaCargando = true; render();
+  supa.from('tablero_datos').select('data').eq('id', 1).single().then(function(r){
+    supaCargando = false;
+    if(r.error){ supaError = 'No se pudieron cargar los datos del tablero.'; render(); return; }
+    var d = r.data && r.data.data;
+    if(d){
+      DB = d;
+      ['proyectos','fases','tareas','entregables','recursos','asignaciones','costos','riesgos','alcance','interesados','comunicaciones','avances'].forEach(function(k){ if(!Array.isArray(DB[k])) DB[k]=[]; });
+    }
+    supaError = ''; readOnly = false; render();
+  });
+}
+function initSupabase(cfg){
+  cargarScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js', function(){
+    supa = window.supabase.createClient(cfg.url, cfg.anonKey);
+    supa.auth.onAuthStateChange(function(_evt, session){
+      supaUser = session ? session.user : null;
+      if(supaUser) cargarDesdeSupabase(); else render();
+    });
+    supa.auth.getSession().then(function(r){
+      supaUser = (r.data && r.data.session) ? r.data.session.user : null;
+      if(supaUser) cargarDesdeSupabase(); else render();
+    });
+    render();
+  });
+}
+function pantallaLogin(){
+  var cuerpo = !supa
+    ? '<p class="t-sub">Conectando…</p>'
+    : '<form id="login-form">'
+      + '<label class="fld"><span>Correo</span><input type="email" id="lg_email" required autocomplete="username"></label>'
+      + '<label class="fld"><span>Contraseña</span><input type="password" id="lg_pass" required autocomplete="current-password"></label>'
+      + (supaError?'<span class="err">'+esc(supaError)+'</span>':'')
+      + '<button class="btn btn-primary" type="submit"'+(supaCargando?' disabled':'')+'>'+(supaCargando?'Ingresando…':'Iniciar sesión')+'</button>'
+      + '</form>';
+  return '<div class="login-wrap"><div class="card">'
+    + '<h1>Control de Portafolio</h1><p class="t-sub">Inicia sesión para ver y editar el tablero.</p>'
+    + cuerpo + '</div></div>';
+}
+document.addEventListener('submit', function(ev){
+  if(!ev.target || ev.target.id!=='login-form') return;
+  ev.preventDefault();
+  var email = document.getElementById('lg_email').value.trim();
+  var pass = document.getElementById('lg_pass').value;
+  supaError = ''; supaCargando = true; render();
+  supa.auth.signInWithPassword({ email: email, password: pass }).then(function(r){
+    supaCargando = false;
+    if(r.error){ supaError = 'Correo o contraseña incorrectos.'; render(); return; }
+  });
+});
 
 /* ============================ RENDER: MARCO ============================ */
 var TABS = [['resumen','Resumen ejecutivo'],['cronograma','Cronograma'],['entregables','Entregables'],['tareas','Tareas'],['riesgos','Riesgos'],['bitacora','Bitácora'],['comunicaciones','Comunicaciones'],['recursos','Recursos y costos'],['ficha','Ficha del proyecto'],['datos','Datos']];
@@ -507,6 +587,7 @@ function shell(contenido){
     + '<button class="btn" data-act="pdf" title="Genera el informe ejecutivo en PDF y lo entrega como archivo.">Descargar PDF</button>'
     + '<button class="btn btn-ghost" data-act="imprimir" title="Usa el diálogo de impresión del navegador. Si el tablero está embebido, puede no responder: en ese caso usa Descargar PDF.">Imprimir</button>'
     + (readOnly?'':'<button class="btn btn-primary" data-act="nuevo-proyecto">+ Proyecto</button>')
+    + (modoSupa && supaUser?'<span class="t-sub" style="margin-left:8px">'+esc(supaUser.email||'')+'</span><button class="btn btn-ghost" data-act="logout">Salir</button>':'')
     + '</div>'
     + '<nav class="tabs" role="tablist">'+ TABS.map(function(t){
         return '<button class="tab" role="tab" aria-selected="'+(UI.tab===t[0])+'" data-tab="'+t[0]+'">'+t[1]+'</button>'; }).join('') + '</nav>'
@@ -2066,6 +2147,7 @@ document.addEventListener('click', function(ev){
   if(!b || b.closest('.ovl')) return;
   var act = b.getAttribute('data-act'), id = b.getAttribute('data-id');
   switch(act){
+    case 'logout': if(supa) supa.auth.signOut(); break;
     case 'imprimir':
       try{ window.print(); }catch(e){ toast('El navegador no permitió abrir el diálogo de impresión. Usa Descargar PDF.', 6000); }
       break;
@@ -2137,7 +2219,7 @@ function vistaActual(){
 }
 function render(){
   var sx = window.scrollX, sy = window.scrollY;
-  root.innerHTML = shell(vistaActual());
+  root.innerHTML = (modoSupa && !supaUser) ? pantallaLogin() : shell(vistaActual());
   root.removeAttribute('aria-busy');
   var gr = root.querySelector('.g-right[data-hoy]');
   if(gr){ gr.scrollLeft = Math.max(0, Number(gr.getAttribute('data-hoy')) - gr.clientWidth*0.32); }
@@ -2153,7 +2235,13 @@ if(window.claude && typeof window.claude.use==='function'){
   })['catch'](function(){ readOnly = true; render(); });
   window.claude.use('downloads').then(function(ns){ downloadsNS = ns; })['catch'](function(){});
 } else {
-  readOnly = true; render();
+  var cfg = cfgSupabase();
+  if(cfg && cfg.url && cfg.anonKey){
+    modoSupa = true; readOnly = true;
+    initSupabase(cfg); render();
+  } else {
+    readOnly = true; render();
+  }
 }
 })();
 </script>

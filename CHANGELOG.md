@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [1.2.0] — 2026-09-18
+
+### Agregado
+- Persistencia con Supabase para el despliegue standalone (Vercel): cuando la app corre fuera de la
+  plataforma de Artifacts y hay credenciales de Supabase configuradas, pide inicio de sesión
+  (correo y contraseña) y guarda/lee el tablero completo desde la tabla `tablero_datos`.
+  Ver `supabase/schema.sql` para la migración y `vercel.json` para el build.
+- Botón para cerrar sesión cuando el tablero corre en modo Supabase.
+
 ## [1.1.0] — 2026-09-11
 
 ### Agregado

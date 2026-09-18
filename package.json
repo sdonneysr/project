@@ -1,6 +1,6 @@
 {
   "name": "control-portafolio",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Tablero de gerencia de proyectos: cronograma Gantt con dependencias, entregables, tareas, riesgos, comunicaciones e interesados, recursos y presupuesto. Una sola pagina HTML autocontenida que se publica como Artifact de Claude y guarda sus propios datos.",
   "type": "module",
   "private": true,
